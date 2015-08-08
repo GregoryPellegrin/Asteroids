@@ -188,53 +188,41 @@ public class Game extends JFrame
 			@Override
 			public void keyPressed (KeyEvent e)
 			{
-				//Determine which key was pressed.
 				switch (e.getKeyCode())
 				{
-					//Indicate that we want to apply thrust to our ship.
 					case KeyEvent.VK_Z:
 					case KeyEvent.VK_UP:
-						if (!checkForRestart())
-						{
+						if (! checkForRestart())
 							player.setThrusting(true);
-						}
 						break;
 
-					//Indicate that we want to rotate our ship to the left.
 					case KeyEvent.VK_Q:
 					case KeyEvent.VK_LEFT:
-						if (!checkForRestart())
-						{
+						if (! checkForRestart())
 							player.setRotateLeft(true);
-						}
 						break;
 
-					//Indicate that we want to rotate our ship to the right.
 					case KeyEvent.VK_D:
 					case KeyEvent.VK_RIGHT:
-						if (!checkForRestart())
-						{
+						if (! checkForRestart())
 							player.setRotateRight(true);
-						}
 						break;
 
-					//Indicate that we want our ship to fire bullets.
+					case KeyEvent.VK_E:
+						if (! checkForRestart())
+							player.setSuperSpeed(true);
+						break;
+
 					case KeyEvent.VK_SPACE:
-						if (!checkForRestart())
-						{
+						if (! checkForRestart())
 							player.setFiring(true);
-						}
 						break;
 
-					//Indicate that we want to pause the game.
 					case KeyEvent.VK_P:
-						if (!checkForRestart())
-						{
-							logicTimer.setPaused(!logicTimer.isPaused());
-						}
+						if (! checkForRestart())
+							logicTimer.setPaused(! logicTimer.isPaused());
 						break;
 
-					//Handle all other key presses.
 					default:
 						checkForRestart();
 						break;
@@ -246,25 +234,25 @@ public class Game extends JFrame
 			{
 				switch (e.getKeyCode())
 				{
-					//Indicate that we no long want to apply thrust to the ship.
 					case KeyEvent.VK_Z:
 					case KeyEvent.VK_UP:
 						player.setThrusting(false);
 						break;
 
-					//Indicate that we no longer want to rotate our ship left.
 					case KeyEvent.VK_Q:
 					case KeyEvent.VK_LEFT:
 						player.setRotateLeft(false);
 						break;
 
-					//Indicate that we no longer want to rotate our ship right.
 					case KeyEvent.VK_D:
 					case KeyEvent.VK_RIGHT:
 						player.setRotateRight(false);
 						break;
 
-					//Indicate that we no long want to fire bullets.
+					case KeyEvent.VK_E:
+						player.setSuperSpeed(false);
+						break;
+
 					case KeyEvent.VK_SPACE:
 						player.setFiring(false);
 						break;

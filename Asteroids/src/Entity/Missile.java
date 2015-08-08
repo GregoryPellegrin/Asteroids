@@ -1,26 +1,20 @@
 package Entity;
 
 import Game.Game;
+import Game.WorldPanel;
 import Util.Vector;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class Missile extends Entity
 {
-	/**
-	 * La magnitude de la velocite d'un missile
-	 */
-	private static final double MAGNITUDE_VELOCITE = 6.75;
+	private static final double SPEED_MAGNITUDE = 6.75;
 	private static final int LIFESPAN_MAX = 60;
 	private int lifeSpan;
 
-	/**
-	 * @param owner L'objet qui a tire le missile
-	 * @param direction La direction du missile
-	 */
-	public Missile (Entity owner, double direction)
+	public Missile (Entity owner, Color color, double direction)
 	{
-		super(new Vector(owner.position), new Vector(direction).scale(MAGNITUDE_VELOCITE), 2.0, 0);
+		super(new Vector(owner.position), new Vector(direction).scale(SPEED_MAGNITUDE), color, 2.0, 0);
 		
 		this.lifeSpan = LIFESPAN_MAX;
 	}
@@ -46,8 +40,9 @@ public class Missile extends Entity
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		g.setColor(Color.RED);
+		g.setColor(this.color);
 		g.drawOval(-1, -1, 2, 2);
-		g.setColor(Color.WHITE);
+		
+		g.setColor(WorldPanel.COLOR_DEFAULT);
 	}
 }

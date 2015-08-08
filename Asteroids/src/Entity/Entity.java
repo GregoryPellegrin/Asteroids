@@ -3,21 +3,24 @@ package Entity;
 import Game.Game;
 import Game.WorldPanel;
 import Util.Vector;
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 public abstract class Entity
 {
 	protected Vector position;
 	protected Vector velocity;
+	protected Color color;
 	protected double rotation;
 	protected double collisionRadius;
 	private boolean needsRemoval;
 	private int killScore;
 
-	public Entity (Vector position, Vector velocity, double radius, int killScore)
+	public Entity (Vector position, Vector velocity, Color color, double radius, int killScore)
 	{
 		this.position = position;
 		this.velocity = velocity;
+		this.color = color;
 		this.collisionRadius = radius;
 		this.rotation = 0.0f;
 		this.killScore = killScore;
@@ -75,12 +78,12 @@ public abstract class Entity
 		this.position.add(this.velocity);
 		
 		if (this.position.x < 0.0f)
-			this.position.x = this.position.x + WorldPanel.wMapPixel;
+			this.position.x = this.position.x + WorldPanel.W_MAP_PIXEL;
 		if (this.position.y < 0.0f)
-			this.position.y = this.position.y + WorldPanel.hMapPixel;
+			this.position.y = this.position.y + WorldPanel.H_MAP_PIXEL;
 		
-		this.position.x %= WorldPanel.wMapPixel;
-		this.position.y %= WorldPanel.hMapPixel;
+		this.position.x %= WorldPanel.W_MAP_PIXEL;
+		this.position.y %= WorldPanel.H_MAP_PIXEL;
 	}
 
 	/**

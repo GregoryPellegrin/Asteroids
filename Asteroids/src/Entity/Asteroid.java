@@ -5,6 +5,7 @@ import java.util.Random;
 import Game.Game;
 import Game.WorldPanel;
 import Util.Vector;
+import java.awt.Color;
 
 public class Asteroid extends Entity
 {
@@ -46,7 +47,7 @@ public class Asteroid extends Entity
 	/**
 	 * The maximum distance from the player spawn that a new asteroid can spawn.
 	 */
-	private static final double MAX_DISTANCE = WorldPanel.wMapPixel / 2.0;
+	private static final double MAX_DISTANCE = WorldPanel.W_MAP_PIXEL / 2.0;
 
 	/**
 	 * The variation between the spawn distances.
@@ -75,7 +76,8 @@ public class Asteroid extends Entity
 	 */
 	public Asteroid (Random random)
 	{
-		super(calculatePosition(random), calculateVelocity(random), AsteroidSize.Large.radius, AsteroidSize.Large.killValue);
+		super(calculatePosition(random), calculateVelocity(random), Color.GRAY, AsteroidSize.Large.radius, AsteroidSize.Large.killValue);
+		
 		this.rotationSpeed = -MIN_ROTATION + (random.nextDouble() * ROTATION_VARIANCE);
 		this.size = AsteroidSize.Large;
 	}
@@ -89,7 +91,8 @@ public class Asteroid extends Entity
 	 */
 	public Asteroid (Asteroid parent, AsteroidSize size, Random random)
 	{
-		super(new Vector(parent.position), calculateVelocity(random), size.radius, size.killValue);
+		super(new Vector(parent.position), calculateVelocity(random), Color.GRAY, size.radius, size.killValue);
+		
 		this.rotationSpeed = MIN_ROTATION + (random.nextDouble() * ROTATION_VARIANCE);
 		this.size = size;
 
@@ -109,7 +112,7 @@ public class Asteroid extends Entity
 	 */
 	private static Vector calculatePosition (Random random)
 	{
-		Vector vec = new Vector(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0);
+		Vector vec = new Vector(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
 		
 		return vec.add(new Vector(random.nextDouble() * Math.PI * 2).scale(MIN_DISTANCE + random.nextDouble() * DISTANCE_VARIANCE));
 	}

@@ -13,14 +13,8 @@ public class Player extends Entity
 {
 	private static final double DEFAULT_ROTATION = -Math.PI / 2.0;
 
-	/**
-	 * The magnitude of our ship's thrust.
-	 */
-	private static final double THRUST_MAGNITUDE = 0.0385;
-
-	/**
-	 * The maximum speed at which our ship can travel.
-	 */
+	private static final double SPEED_MAGNITUDE = 0.0385;
+	private static final double SUPER_SPEED_MAGNITUDE = 0.2085;
 	private static final double MAX_VELOCITY_MAGNITUDE = 6.5;
 	private static final double ROTATION_SPEED = 0.052;
 
@@ -40,8 +34,10 @@ public class Player extends Entity
 	 * The number of cycles that must elapse before we stop overheating.
 	 */
 	private static final int MAX_OVERHEAT = 30;
-	private List <Missile> bullets;
-	private Color flamesColor;
+	private List <Missile> missiles;
+	private Color flames1Color;
+	private Color flames2Color;
+	private Color flames3Color;
 	/**
 	 * Whether the ship should apply thrust when it updates.
 	 */
@@ -56,6 +52,7 @@ public class Player extends Entity
 	 * Whether the ship should rotate to the right when it updates.
 	 */
 	private boolean rotateRightPressed;
+	private boolean superSpeed;
 
 	/**
 	 * Whether the ship should fire a bullet when it updates.
@@ -66,6 +63,7 @@ public class Player extends Entity
 	 * Whether the ship is allowed to fire a bullet.
 	 */
 	private boolean firingEnabled;
+	private double speed;
 	private int consecutiveShots;
 	private int fireCooldown;
 	/**
@@ -78,14 +76,18 @@ public class Player extends Entity
 	{
 		super(new Vector(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0), new Vector(0.0, 0.0), Color.BLUE, 10.0, 0);
 		
-		this.bullets = new ArrayList <> ();
-		this.flamesColor = Color.YELLOW;
+		this.missiles = new ArrayList <> ();
+		this.flames1Color = Color.YELLOW;
+		this.flames2Color = Color.RED;
+		this.flames3Color = Color.RED;
 		this.rotation = DEFAULT_ROTATION;
 		this.thrustPressed = false;
 		this.rotateLeftPressed = false;
 		this.rotateRightPressed = false;
+		this.superSpeed = false;
 		this.firePressed = false;
 		this.firingEnabled = true;
+		this.speed = SPEED_MAGNITUDE;
 		this.fireCooldown = 0;
 		this.overheatCooldown = 0;
 		this.animationFrame = 0;
@@ -101,31 +103,26 @@ public class Player extends Entity
 		this.thrustPressed = state;
 	}
 
-	/**
-	 * Sets whether this player should rotate left when it updates.
-	 *
-	 * @param state Whether to rotate left.
-	 */
 	public void setRotateLeft (boolean state)
 	{
 		this.rotateLeftPressed = state;
 	}
-
-	/**
-	 * Sets whether this player should rotate right when it updates.
-	 *
-	 * @param state Whether to rotate right.
-	 */
+	
 	public void setRotateRight (boolean state)
 	{
 		this.rotateRightPressed = state;
 	}
+	
+	public void setSuperSpeed (boolean state)
+	{
+		this.superSpeed = state;
+		
+		if (this.superSpeed)
+			this.speed = SUPER_SPEED_MAGNITUDE;
+		else
+			this.speed = SPEED_MAGNITUDE;
+	}
 
-	/**
-	 * Sets whether this player should fire when it updates.
-	 *
-	 * @param state Whether to fire.
-	 */
 	public void setFiring (boolean state)
 	{
 		this.firePressed = state;
@@ -151,7 +148,7 @@ public class Player extends Entity
 		
 		position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
 		velocity.set(0.0, 0.0);
-		bullets.clear();
+		missiles.clear();
 	}
 
 	@Override
@@ -187,7 +184,7 @@ public class Player extends Entity
 			 * Here we create a new vector based on our ship's rotation, and scale
 			 * it by our thrust's magnitude. Then we add that vector to our velocity.
 			 */
-			velocity.add(new Vector(rotation).scale(THRUST_MAGNITUDE));
+			velocity.add(new Vector(rotation).scale(this.speed));
 
 			/*
 			 * Here we determine whether our ship is going faster than is
@@ -212,14 +209,13 @@ public class Player extends Entity
 		/*
 		 * Loop through each bullet and remove it from the list if necessary.
 		 */
-		Iterator<Missile> iter = bullets.iterator();
+		Iterator <Missile> iter = missiles.iterator();
 		while (iter.hasNext())
 		{
 			Missile bullet = iter.next();
+			
 			if (bullet.needsRemoval())
-			{
 				iter.remove();
-			}
 		}
 
 		/*
@@ -237,13 +233,13 @@ public class Player extends Entity
 			 * If a new bullet can be fired, we reset the fire cooldown, and
 			 * register a new bullet to the game world.
 			 */
-			if (this.bullets.size() < MAX_BULLETS)
+			if (this.missiles.size() < MAX_BULLETS)
 			{
 				this.fireCooldown = FIRE_RATE;
 
 				Missile bullet = new Missile(this, Color.RED, rotation);
 				
-				this.bullets.add(bullet);
+				this.missiles.add(bullet);
 				game.registerEntity(bullet);
 			}
 
@@ -301,12 +297,24 @@ public class Player extends Entity
 			g.drawLine(-6, -6, -6, 6);
 			g.setColor(WorldPanel.COLOR_DEFAULT);
 
-			//Draw the flames behind the ship if we thrusting, and not paused.
 			if (! game.isPaused() && this.thrustPressed && this.animationFrame % 6 < 3)
 			{
-				g.setColor(this.flamesColor);
-				g.drawLine(-6, -6, -12, 0);
-				g.drawLine(-6, 6, -12, 0);
+				g.setColor(this.flames1Color);
+				g.drawLine(-6, -6, -14, 0);
+				g.drawLine(-6, 6, -14, 0);
+				
+				g.setColor(this.flames2Color);
+				g.fillOval(-14, -2, 7, 4);
+				
+				g.setColor(this.flames2Color);
+				g.fillOval(-14, -1, 7, 4);
+				
+				if (this.superSpeed)
+				{
+					g.setColor(this.flames2Color);
+					g.fillOval(-24, -3, 17, 7);
+				}
+				
 				g.setColor(WorldPanel.COLOR_DEFAULT);
 			}
 		}
