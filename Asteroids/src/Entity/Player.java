@@ -1,13 +1,13 @@
 package Entity;
 
+import Game.Game;
+import Game.WorldPanel;
+import Util.Vector;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import Game.Game;
-import Game.WorldPanel;
-import Util.Vector;
 
 public class Player extends Entity
 {
@@ -102,14 +102,15 @@ public class Player extends Entity
 	/**
 	 * The bullets that have been fired.
 	 */
-	private List<Bullet> bullets;
+	private List<Missile> bullets;
 
 	/**
 	 * Initializes a new Player instance.
 	 */
 	public Player ()
 	{
-		super(new Vector(WorldPanel.WORLD_SIZE / 2.0, WorldPanel.WORLD_SIZE / 2.0), new Vector(0.0, 0.0), 10.0, 0);
+		super(new Vector(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0), new Vector(0.0, 0.0), 10.0, 0);
+		
 		this.bullets = new ArrayList<>();
 		this.rotation = DEFAULT_ROTATION;
 		this.thrustPressed = false;
@@ -180,7 +181,7 @@ public class Player extends Entity
 	{
 		this.rotation = DEFAULT_ROTATION;
 		
-		position.set(WorldPanel.WORLD_SIZE / 2.0, WorldPanel.WORLD_SIZE / 2.0);
+		position.set(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0);
 		velocity.set(0.0, 0.0);
 		bullets.clear();
 	}
@@ -243,10 +244,10 @@ public class Player extends Entity
 		/*
 		 * Loop through each bullet and remove it from the list if necessary.
 		 */
-		Iterator<Bullet> iter = bullets.iterator();
+		Iterator<Missile> iter = bullets.iterator();
 		while (iter.hasNext())
 		{
-			Bullet bullet = iter.next();
+			Missile bullet = iter.next();
 			if (bullet.needsRemoval())
 			{
 				iter.remove();
@@ -272,7 +273,7 @@ public class Player extends Entity
 			{
 				this.fireCooldown = FIRE_RATE;
 
-				Bullet bullet = new Bullet(this, rotation);
+				Missile bullet = new Missile(this, rotation);
 				bullets.add(bullet);
 				game.registerEntity(bullet);
 			}
@@ -325,15 +326,19 @@ public class Player extends Entity
 			 * transformations will be handled by the WorldPanel before calling the draw
 			 * function.
 			 */
+			g.setColor(Color.GREEN);
 			g.drawLine(-10, -8, 10, 0);
 			g.drawLine(-10, 8, 10, 0);
 			g.drawLine(-6, -6, -6, 6);
+			g.setColor(Color.WHITE);
 
 			//Draw the flames behind the ship if we thrusting, and not paused.
 			if (!game.isPaused() && thrustPressed && animationFrame % 6 < 3)
 			{
+				g.setColor(Color.ORANGE);
 				g.drawLine(-6, -6, -12, 0);
 				g.drawLine(-6, 6, -12, 0);
+				g.setColor(Color.WHITE);
 			}
 		}
 	}

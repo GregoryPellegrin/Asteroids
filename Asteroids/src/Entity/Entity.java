@@ -1,157 +1,86 @@
 package Entity;
 
-import java.awt.Graphics2D;
-
 import Game.Game;
 import Game.WorldPanel;
 import Util.Vector;
+import java.awt.Graphics2D;
 
 public abstract class Entity
 {
-
-	/**
-	 * The position of this entity.
-	 */
 	protected Vector position;
-
-	/**
-	 * The velocity of this entity.
-	 */
 	protected Vector velocity;
-
-	/**
-	 * The rotation of this entity.
-	 */
 	protected double rotation;
-
-	/**
-	 * The collision radius.
-	 */
-	protected double radius;
-
-	/**
-	 * Flags that the entity needs to be removed from the game.
-	 */
+	protected double collisionRadius;
 	private boolean needsRemoval;
-
-	/**
-	 * The number of points the player earns when this entity is destroyed.
-	 */
 	private int killScore;
 
-	/**
-	 * Creates a new Entity instance.
-	 *
-	 * @param position The position of the Entity.
-	 * @param velocity The velocity of the Entity.
-	 * @param radius The collision radius.
-	 * @param killScore The number of points awarded for killing this entity.
-	 */
 	public Entity (Vector position, Vector velocity, double radius, int killScore)
 	{
 		this.position = position;
 		this.velocity = velocity;
-		this.radius = radius;
+		this.collisionRadius = radius;
 		this.rotation = 0.0f;
 		this.killScore = killScore;
 		this.needsRemoval = false;
 	}
 
-	/**
-	 * Rotates this Entity by amount.
-	 *
-	 * @param amount The amount to rotate by.
-	 */
-	public void rotate (double amount)
+	public Vector getPosition ()
 	{
-		this.rotation += amount;
-		this.rotation %= Math.PI * 2;
+		return this.position;
 	}
 
-	/**
-	 * Gets the number of points awarded for killing this entity.
-	 *
-	 * @return The kill score.
-	 */
+	public Vector getVelocity ()
+	{
+		return this.velocity;
+	}
+
+	public double getRotation ()
+	{
+		return this.rotation;
+	}
+
+	public double getCollisionRadius ()
+	{
+		return this.collisionRadius;
+	}
+
+	public boolean needsRemoval ()
+	{
+		return this.needsRemoval;
+	}
+
 	public int getKillScore ()
 	{
-		return killScore;
+		return this.killScore;
 	}
 
-	/**
-	 * Flags that this Entity should be removed from the world.
-	 */
 	public void flagForRemoval ()
 	{
 		this.needsRemoval = true;
 	}
 
 	/**
-	 * Gets the position of this Entity.
+	 * Fait rotationner l'entity par amount
 	 *
-	 * @return The position.
+	 * @param amount Le montant de rotation
 	 */
-	public Vector getPosition ()
+	public void rotate (double amount)
 	{
-		return position;
+		this.rotation =  this.rotation + amount;
+		this.rotation %= Math.PI * 2;
 	}
 
-	/**
-	 * Gets the velocity of this Entity.
-	 *
-	 * @return The velocity.
-	 */
-	public Vector getVelocity ()
-	{
-		return velocity;
-	}
-
-	/**
-	 * Gets the rotation of this Entity.
-	 *
-	 * @return The rotation.
-	 */
-	public double getRotation ()
-	{
-		return rotation;
-	}
-
-	/**
-	 * Gets the collision radius of this Entity.
-	 *
-	 * @return The collision radius.
-	 */
-	public double getCollisionRadius ()
-	{
-		return radius;
-	}
-
-	/**
-	 * Checks whether this Entity needs to be removed.
-	 *
-	 * @return Whether this Entity needs to be removed.
-	 */
-	public boolean needsRemoval ()
-	{
-		return needsRemoval;
-	}
-
-	/**
-	 * Updates the state of this Entity.
-	 *
-	 * @param game The game instance.
-	 */
 	public void update (Game game)
 	{
-		position.add(velocity);
+		this.position.add(this.velocity);
 		
-		if (position.x < 0.0f)
-			position.x += WorldPanel.WORLD_SIZE;
-		if (position.y < 0.0f)
-			position.y += WorldPanel.WORLD_SIZE;
+		if (this.position.x < 0.0f)
+			this.position.x = this.position.x + WorldPanel.wMapPixel;
+		if (this.position.y < 0.0f)
+			this.position.y = this.position.y + WorldPanel.hMapPixel;
 		
-		position.x %= WorldPanel.WORLD_SIZE;
-		position.y %= WorldPanel.WORLD_SIZE;
+		this.position.x %= WorldPanel.wMapPixel;
+		this.position.y %= WorldPanel.hMapPixel;
 	}
 
 	/**
@@ -172,24 +101,12 @@ public abstract class Entity
 		 * optimizations are unnecessary, it's still a good habit to get
 		 * into.
 		 */
-		double radius = entity.getCollisionRadius() + getCollisionRadius();
+		double radius = entity.getCollisionRadius() + this.getCollisionRadius();
 		
 		return (position.getDistanceToSquared(entity.position) < radius * radius);
 	}
 
-	/**
-	 * Handle a collision with another Entity.
-	 *
-	 * @param game The game instance.
-	 * @param other The Entity that we collided with.
-	 */
 	public abstract void handleCollision (Game game, Entity other);
 
-	/**
-	 * Draw this Entity onto the window.
-	 *
-	 * @param g The Graphics instance.
-	 * @param game The game instance.
-	 */
 	public abstract void draw (Graphics2D g, Game game);
 }

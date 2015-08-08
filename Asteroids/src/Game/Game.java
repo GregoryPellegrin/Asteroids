@@ -1,5 +1,9 @@
 package Game;
 
+import Entity.Asteroid;
+import Entity.Entity;
+import Entity.Player;
+import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -8,13 +12,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
 import javax.swing.JFrame;
-
-import Entity.Asteroid;
-import Entity.Entity;
-import Entity.Player;
-import Util.Clock;
 
 public class Game extends JFrame
 {
@@ -194,7 +192,7 @@ public class Game extends JFrame
 				switch (e.getKeyCode())
 				{
 					//Indicate that we want to apply thrust to our ship.
-					case KeyEvent.VK_W:
+					case KeyEvent.VK_Z:
 					case KeyEvent.VK_UP:
 						if (!checkForRestart())
 						{
@@ -203,7 +201,7 @@ public class Game extends JFrame
 						break;
 
 					//Indicate that we want to rotate our ship to the left.
-					case KeyEvent.VK_A:
+					case KeyEvent.VK_Q:
 					case KeyEvent.VK_LEFT:
 						if (!checkForRestart())
 						{
@@ -240,7 +238,6 @@ public class Game extends JFrame
 					default:
 						checkForRestart();
 						break;
-
 				}
 			}
 
@@ -249,15 +246,14 @@ public class Game extends JFrame
 			{
 				switch (e.getKeyCode())
 				{
-
 					//Indicate that we no long want to apply thrust to the ship.
-					case KeyEvent.VK_W:
+					case KeyEvent.VK_Z:
 					case KeyEvent.VK_UP:
 						player.setThrusting(false);
 						break;
 
 					//Indicate that we no longer want to rotate our ship left.
-					case KeyEvent.VK_A:
+					case KeyEvent.VK_Q:
 					case KeyEvent.VK_LEFT:
 						player.setRotateLeft(false);
 						break;
@@ -676,9 +672,10 @@ public class Game extends JFrame
 	 *
 	 * @param args Unused command line arguments.
 	 */
-	public static void main (String[] args)
+	public static void main (String [] args)
 	{
 		Game game = new Game();
+		
 		game.startGame();
 	}
 }

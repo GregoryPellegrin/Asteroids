@@ -2,7 +2,6 @@ package Entity;
 
 import java.awt.Graphics2D;
 import java.util.Random;
-
 import Game.Game;
 import Game.WorldPanel;
 import Util.Vector;
@@ -47,7 +46,7 @@ public class Asteroid extends Entity
 	/**
 	 * The maximum distance from the player spawn that a new asteroid can spawn.
 	 */
-	private static final double MAX_DISTANCE = WorldPanel.WORLD_SIZE / 2.0;
+	private static final double MAX_DISTANCE = WorldPanel.wMapPixel / 2.0;
 
 	/**
 	 * The variation between the spawn distances.
@@ -110,7 +109,7 @@ public class Asteroid extends Entity
 	 */
 	private static Vector calculatePosition (Random random)
 	{
-		Vector vec = new Vector(WorldPanel.WORLD_SIZE / 2.0, WorldPanel.WORLD_SIZE / 2.0);
+		Vector vec = new Vector(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0);
 		
 		return vec.add(new Vector(random.nextDouble() * Math.PI * 2).scale(MIN_DISTANCE + random.nextDouble() * DISTANCE_VARIANCE));
 	}
