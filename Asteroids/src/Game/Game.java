@@ -1,10 +1,13 @@
 package Game;
 
 import Entity.Asteroid;
+import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
 import Util.Clock;
+import Util.Vector;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -16,77 +19,22 @@ import javax.swing.JFrame;
 
 public class Game extends JFrame
 {
-	/**
-	 * The Serial Version Unique Identifier.
-	 */
 	private static final long serialVersionUID = -3535839203174039672L;
-
-	/**
-	 * The number of frame per second the game should run at.
-	 */
 	private static final int FRAMES_PER_SECOND = 60;
-
-	/**
-	 * The number of nanoseconds that should elapse each frame. This is far more
-	 * accurate than using milliseconds.
-	 */
 	private static final long FRAME_TIME = (long) (1000000000.0 / FRAMES_PER_SECOND);
-
-	/**
-	 * The number of frames that the "current level" message appears for.
-	 */
 	private static final int DISPLAY_LEVEL_LIMIT = 60;
-
-	/**
-	 * The value that {@code deathCooldown} will be set to upon player death.
-	 */
 	private static final int DEATH_COOLDOWN_LIMIT = 200;
-
-	/**
-	 * The value for {@code deathCooldown} that the Player respawns.
-	 */
 	private static final int RESPAWN_COOLDOWN_LIMIT = 100;
-
-	/**
-	 * The value for {@code deathCooldown} that the player becomes vulnerable,
-	 * and regains the ability to fire.
-	 */
 	private static final int INVULN_COOLDOWN_LIMIT = 0;
-
-	/**
-	 * The value that {@code resetCooldown} is set to when the player loses.
-	 */
 	private static final int RESET_COOLDOWN_LIMIT = 120;
-
-	/**
-	 * The WorldPanel instance.
-	 */
+	private List <Entity> entities;
+	private List <Entity> pendingEntities;
 	private WorldPanel world;
-
-	/**
-	 * The Clock instance for handling the game updates.
-	 */
 	private Clock logicTimer;
-
-	/**
-	 * The Random instance for spawning entities.
-	 */
 	private Random random;
-
-	/**
-	 * The list of Entity objects that exist in the game world.
-	 */
-	private List<Entity> entities;
-
-	/**
-	 * The list of Entity objects that need to be added to the game world.
-	 */
-	private List<Entity> pendingEntities;
-
-	/**
-	 * The Player instance.
-	 */
 	private Player player;
+	private boolean isGameOver;
+	private boolean restartGame;
 
 	/**
 	 * <p>
@@ -126,45 +74,19 @@ public class Game extends JFrame
 	 * be reset, giving the player time to react.</p>
 	 */
 	private int restartCooldown;
-
-	/**
-	 * The current score.
-	 */
 	private int score;
-
-	/**
-	 * The number of lives the Player has left.
-	 */
 	private int lives;
-
-	/**
-	 * The current level the player is on.
-	 */
 	private int level;
 
-	/**
-	 * Whether or not the game is over.
-	 */
-	private boolean isGameOver;
-
-	/**
-	 * Whether or not the player has pressed anything to restart the game.
-	 */
-	private boolean restartGame;
-
-	/**
-	 * Create a new instance of the Game.
-	 */
 	private Game ()
 	{
-		//Initialize the window's basic properties.
-		super("Asteroids");
-		setLayout(new BorderLayout());
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setResizable(false);
+		super ("Asteroids");
+		
+		this.setLayout(new BorderLayout ());
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setResizable(false);
 
-		//Create and add the WorldPanel instance to the window.
-		add(this.world = new WorldPanel(this), BorderLayout.CENTER);
+		this.add(this.world = new WorldPanel (this), BorderLayout.CENTER);
 
 		/*
 		 * Here we add a key listener to the window so that we can process incoming
@@ -183,7 +105,7 @@ public class Game extends JFrame
 		 * Note that any "pressed" event will restart the game rather than change the
 		 * ship's state if the conditions are met.
 		 */
-		addKeyListener(new KeyAdapter()
+		this.addKeyListener(new KeyAdapter ()
 		{
 			@Override
 			public void keyPressed (KeyEvent e)
@@ -208,7 +130,7 @@ public class Game extends JFrame
 							player.setRotateRight(true);
 						break;
 
-					case KeyEvent.VK_E:
+					case KeyEvent.VK_O:
 						if (! checkForRestart())
 							player.setSuperSpeed(true);
 						break;
@@ -249,7 +171,7 @@ public class Game extends JFrame
 						player.setRotateRight(false);
 						break;
 
-					case KeyEvent.VK_E:
+					case KeyEvent.VK_O:
 						player.setSuperSpeed(false);
 						break;
 
@@ -260,42 +182,141 @@ public class Game extends JFrame
 			}
 		});
 
-		//Resize the window to the correct size, position it in the center of the screen, and display it.
-		pack();
-		setLocationRelativeTo(null);
-		setVisible(true);
+		this.pack();
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+	}
+	
+	public List <Entity> getEntities ()
+	{
+		return this.entities;
 	}
 
-	/**
-	 * Check the user input to see if the key should be used to restart the game.
-	 *
-	 * @return Whether or not the key restarted the game.
-	 */
+	public Player getPlayer ()
+	{
+		return this.player;
+	}
+	
+	public Random getRandom ()
+	{
+		return this.random;
+	}
+
+	public boolean isGameOver ()
+	{
+		return this.isGameOver;
+	}
+
+	public int getScore ()
+	{
+		return this.score;
+	}
+
+	public int getLives ()
+	{
+		return this.lives;
+	}
+
+	public int getLevel ()
+	{
+		return this.level;
+	}
+
+	public boolean isPaused ()
+	{
+		return this.logicTimer.isPaused();
+	}
+
+	public boolean isPlayerInvulnerable ()
+	{
+		return (this.deathCooldown > Game.INVULN_COOLDOWN_LIMIT);
+	}
+
+	public boolean canDrawPlayer ()
+	{
+		return (this.deathCooldown <= Game.RESPAWN_COOLDOWN_LIMIT);
+	}
+	
+	public boolean isShowingLevel ()
+	{
+		return (this.showLevelCooldown > 0);
+	}
+	
+	private boolean areEnemiesDead ()
+	{
+		for (Entity e : entities)
+			if (e.getClass() == Asteroid.class)
+				return false;
+		
+		return true;
+	}
+
 	private boolean checkForRestart ()
 	{
-		boolean restart = (isGameOver && restartCooldown <= 0);
+		boolean restart = (this.isGameOver && this.restartCooldown <= 0);
+		
 		if (restart)
-			restartGame = true;
+			this.restartGame = true;
 		
 		return restart;
 	}
 
-	/**
-	 * Starts the game running, and enters the main game loop.
-	 */
+	public void addScore (int score)
+	{
+		this.score = this.score + score;
+	}
+
+	public void registerEntity (Entity entity)
+	{
+		this.pendingEntities.add(entity);
+	}
+	
+	private void resetEntityLists ()
+	{
+		this.pendingEntities.clear();
+		this.entities.clear();
+		this.entities.add(this.player);
+	}
+	
+	public void killPlayer ()
+	{
+		this.lives--;
+
+		if (this.lives == 0)
+		{
+			this.isGameOver = true;
+			this.restartCooldown = Game.RESET_COOLDOWN_LIMIT;
+			this.deathCooldown = Integer.MAX_VALUE;
+		}
+		else
+			this.deathCooldown = Game.DEATH_COOLDOWN_LIMIT;
+
+		this.player.setFiringEnabled(false);
+	}
+	
+	private void resetGame ()
+	{
+		this.score = 0;
+		this.level = 0;
+		this.lives = 3;
+		this.deathCooldown = 0;
+		this.isGameOver = false;
+		this.restartGame = false;
+		
+		resetEntityLists();
+	}
+
 	private void startGame ()
 	{
-		//Initialize the engine's variables.
-		this.random = new Random();
-		this.entities = new LinkedList<Entity>();
-		this.pendingEntities = new ArrayList<>();
-		this.player = new Player();
+		this.random = new Random ();
+		this.entities = new LinkedList <> ();
+		this.pendingEntities = new ArrayList <> ();
+		this.player = new Player ();
 
-		//Set the variables to their default values.
 		resetGame();
 
-		//Create the logic timer and enter the game loop.
-		this.logicTimer = new Clock(FRAMES_PER_SECOND);
+		this.logicTimer = new Clock (FRAMES_PER_SECOND);
+		
 		while (true)
 		{
 			//Get the time that the frame started.
@@ -369,7 +390,7 @@ public class Game extends JFrame
 		 * If the game is currently in progress, and there are no enemies left alive,
 		 * we prepare the next level.
 		 */
-		if (!isGameOver && areEnemiesDead())
+		if (! isGameOver && areEnemiesDead())
 		{
 			//Increment the current level, and set the show level cooldown.
 			this.level++;
@@ -379,12 +400,13 @@ public class Game extends JFrame
 			resetEntityLists();
 
 			//Reset the player's entity to it's default state, and re-enable firing.
-			player.reset();
-			player.setFiringEnabled(true);
+			this.player.reset();
+			this.player.setFiringEnabled(true);
 
 			//Add the asteroids to the world.
-			for (int i = 0; i < level + 2; i++)
-				registerEntity(new Asteroid(random));
+			for (int i = 0; i < this.level + 2; i++)
+				registerEntity(new Asteroid (random));
+			registerEntity(new Ennemi (random, new Vector (1.1, 1.1), Color.RED, 10.0, 100));
 		}
 
 		/*
@@ -394,6 +416,7 @@ public class Game extends JFrame
 		if (deathCooldown > 0)
 		{
 			this.deathCooldown--;
+			
 			switch (deathCooldown)
 			{
 
@@ -448,7 +471,7 @@ public class Game extends JFrame
 			}
 
 			//Loop through and remove "dead" entities.
-			Iterator<Entity> iter = entities.iterator();
+			Iterator <Entity> iter = this.entities.iterator();
 			while (iter.hasNext())
 			{
 				if (iter.next().needsRemoval())
@@ -457,209 +480,6 @@ public class Game extends JFrame
 		}
 	}
 
-	/**
-	 * Set the game's variables to their default values.
-	 */
-	private void resetGame ()
-	{
-		this.score = 0;
-		this.level = 0;
-		this.lives = 3;
-		this.deathCooldown = 0;
-		this.isGameOver = false;
-		this.restartGame = false;
-		resetEntityLists();
-	}
-
-	/**
-	 * Removes all entities, with the exception of the player, from the world.
-	 */
-	private void resetEntityLists ()
-	{
-		pendingEntities.clear();
-		entities.clear();
-		entities.add(player);
-	}
-
-	/**
-	 * Determines whether or not any asteroids still exist in the world.
-	 *
-	 * @return Whether or not all of the enemies are dead.
-	 */
-	private boolean areEnemiesDead ()
-	{
-		for (Entity e : entities)
-			if (e.getClass() == Asteroid.class)
-				return false;
-		
-		return true;
-	}
-
-	/**
-	 * Updates the game state to reflect a player death.
-	 */
-	public void killPlayer ()
-	{
-		//Decrement the number of lives that we still have.
-		this.lives--;
-
-		/*
-		 * If there are no lives remaining, prepare the game over state variables,
-		 * otherwise prepare the death cooldown.
-		 * 
-		 * Note that death cooldown is set to Integer.MAX_VALUE in the event of a
-		 * game over. While finite, the amount of time it would take for it to
-		 * reach zero is far longer than anyone would care to run the program
-		 * for.
-		 */
-		if (lives == 0)
-		{
-			this.isGameOver = true;
-			this.restartCooldown = RESET_COOLDOWN_LIMIT;
-			this.deathCooldown = Integer.MAX_VALUE;
-		}
-		else
-			this.deathCooldown = DEATH_COOLDOWN_LIMIT;
-
-		//Disable the ability to fire.
-		player.setFiringEnabled(false);
-	}
-
-	/**
-	 * Add to the current score.
-	 *
-	 * @param score The number of points to add.
-	 */
-	public void addScore (int score)
-	{
-		this.score += score;
-	}
-
-	/**
-	 * Adds a new entity to the game world.
-	 *
-	 * @param entity The entity to add.
-	 */
-	public void registerEntity (Entity entity)
-	{
-		pendingEntities.add(entity);
-	}
-
-	/**
-	 * Whether or not we are in the game over state.
-	 *
-	 * @return Whether or not the game is over.
-	 */
-	public boolean isGameOver ()
-	{
-		return isGameOver;
-	}
-
-	/**
-	 * Determines whether or not the player is invulnerable.
-	 *
-	 * @return Whether or not the player is invulnerable.
-	 */
-	public boolean isPlayerInvulnerable ()
-	{
-		return (deathCooldown > INVULN_COOLDOWN_LIMIT);
-	}
-
-	/**
-	 * Determines whether or not the player can be drawn.
-	 *
-	 * @return Whether or not the player can be drawn.
-	 */
-	public boolean canDrawPlayer ()
-	{
-		return (deathCooldown <= RESPAWN_COOLDOWN_LIMIT);
-	}
-
-	/**
-	 * Gets the current score.
-	 *
-	 * @return The current score.
-	 */
-	public int getScore ()
-	{
-		return score;
-	}
-
-	/**
-	 * Gets the number of lives remaining.
-	 *
-	 * @return The number of lives remaining.
-	 */
-	public int getLives ()
-	{
-		return lives;
-	}
-
-	/**
-	 * Gets the current level.
-	 *
-	 * @return The current level.
-	 */
-	public int getLevel ()
-	{
-		return level;
-	}
-
-	/**
-	 * Gets whether or not the game is paused.
-	 *
-	 * @return Whether or not the game is paused.
-	 */
-	public boolean isPaused ()
-	{
-		return logicTimer.isPaused();
-	}
-
-	/**
-	 * Gets whether or not the level is being shown.
-	 *
-	 * @return Whether or not the level is being shown.
-	 */
-	public boolean isShowingLevel ()
-	{
-		return (showLevelCooldown > 0);
-	}
-
-	/**
-	 * Gets the Random instance.
-	 *
-	 * @return The Random instance.
-	 */
-	public Random getRandom ()
-	{
-		return random;
-	}
-
-	/**
-	 * Gets the list of Entities in the world.
-	 *
-	 * @return The Entity list.
-	 */
-	public List<Entity> getEntities ()
-	{
-		return entities;
-	}
-
-	/**
-	 * Gets the Player instance.
-	 *
-	 * @return
-	 */
-	public Player getPlayer ()
-	{
-		return player;
-	}
-
-	/**
-	 * Entry point of the program. Creates and starts a new game instance.
-	 *
-	 * @param args Unused command line arguments.
-	 */
 	public static void main (String [] args)
 	{
 		Game game = new Game();
