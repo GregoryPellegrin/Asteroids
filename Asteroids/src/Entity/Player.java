@@ -22,38 +22,26 @@ public class Player extends Entity
 	 * The maximum speed at which our ship can travel.
 	 */
 	private static final double MAX_VELOCITY_MAGNITUDE = 6.5;
-
-	/**
-	 * The speed at which the ship rotates.
-	 */
 	private static final double ROTATION_SPEED = 0.052;
 
 	/**
 	 * The factor at which our ship slows down.
 	 */
 	private static final double SLOW_RATE = 0.995;
-
-	/**
-	 * The maximum number of bullets that can be fired at once.
-	 */
 	private static final int MAX_BULLETS = 4;
 
 	/**
 	 * The number of cycles that must elapse between shots.
 	 */
 	private static final int FIRE_RATE = 4;
-
-	/**
-	 * The maximum number of shots that can be fired consecutively before
-	 * overheating.
-	 */
 	private static final int MAX_CONSECUTIVE_SHOTS = 8;
 
 	/**
 	 * The number of cycles that must elapse before we stop overheating.
 	 */
 	private static final int MAX_OVERHEAT = 30;
-
+	private List <Missile> bullets;
+	private Color flamesColor;
 	/**
 	 * Whether the ship should apply thrust when it updates.
 	 */
@@ -78,40 +66,20 @@ public class Player extends Entity
 	 * Whether the ship is allowed to fire a bullet.
 	 */
 	private boolean firingEnabled;
-
-	/**
-	 * The number of consecutive shots fired.
-	 */
 	private int consecutiveShots;
-
-	/**
-	 * The cooldown timer for firing.
-	 */
 	private int fireCooldown;
-
 	/**
 	 * The cooldown timer for overheating.
 	 */
 	private int overheatCooldown;
-
-	/**
-	 * The current animation frame.
-	 */
 	private int animationFrame;
 
-	/**
-	 * The bullets that have been fired.
-	 */
-	private List<Missile> bullets;
-
-	/**
-	 * Initializes a new Player instance.
-	 */
 	public Player ()
 	{
-		super(new Vector(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0), new Vector(0.0, 0.0), 10.0, 0);
+		super(new Vector(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0), new Vector(0.0, 0.0), Color.BLUE, 10.0, 0);
 		
-		this.bullets = new ArrayList<>();
+		this.bullets = new ArrayList <> ();
+		this.flamesColor = Color.YELLOW;
 		this.rotation = DEFAULT_ROTATION;
 		this.thrustPressed = false;
 		this.rotateLeftPressed = false;
@@ -181,7 +149,7 @@ public class Player extends Entity
 	{
 		this.rotation = DEFAULT_ROTATION;
 		
-		position.set(WorldPanel.wMapPixel / 2.0, WorldPanel.hMapPixel / 2.0);
+		position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
 		velocity.set(0.0, 0.0);
 		bullets.clear();
 	}
@@ -207,7 +175,7 @@ public class Player extends Entity
 		 * }
 		 */
 		if (rotateLeftPressed != rotateRightPressed)
-			rotate(rotateLeftPressed ? -ROTATION_SPEED : ROTATION_SPEED);
+			rotate(rotateLeftPressed ? - ROTATION_SPEED : ROTATION_SPEED);
 
 		/*
 		 * Apply thrust to our ship's velocity, and ensure that the ship is not
@@ -269,12 +237,13 @@ public class Player extends Entity
 			 * If a new bullet can be fired, we reset the fire cooldown, and
 			 * register a new bullet to the game world.
 			 */
-			if (bullets.size() < MAX_BULLETS)
+			if (this.bullets.size() < MAX_BULLETS)
 			{
 				this.fireCooldown = FIRE_RATE;
 
-				Missile bullet = new Missile(this, rotation);
-				bullets.add(bullet);
+				Missile bullet = new Missile(this, Color.RED, rotation);
+				
+				this.bullets.add(bullet);
 				game.registerEntity(bullet);
 			}
 
@@ -288,7 +257,7 @@ public class Player extends Entity
 			 * us from firing a continuous stream of bullets until we start missing.
 			 */
 			this.consecutiveShots++;
-			if (consecutiveShots == MAX_CONSECUTIVE_SHOTS)
+			if (this.consecutiveShots == MAX_CONSECUTIVE_SHOTS)
 			{
 				this.consecutiveShots = 0;
 				this.overheatCooldown = MAX_OVERHEAT;
@@ -296,7 +265,7 @@ public class Player extends Entity
 		}
 		else
 		{
-			if (consecutiveShots > 0)
+			if (this.consecutiveShots > 0)
 			{
 				//Decrement the number of consecutive shots, since we're not trying to fire.
 				this.consecutiveShots--;
@@ -319,26 +288,26 @@ public class Player extends Entity
 		 * When the player recently spawned, it will flash for a few seconds to indicate
 		 * that it is invulnerable. The player will not flash if the game is paused.
 		 */
-		if (!game.isPlayerInvulnerable() || game.isPaused() || animationFrame % 20 < 10)
+		if (! game.isPlayerInvulnerable() || game.isPaused() || this.animationFrame % 20 < 10)
 		{
 			/*
 			 * Draw the ship. The nose will face right (0.0 on the unit circle). All
 			 * transformations will be handled by the WorldPanel before calling the draw
 			 * function.
 			 */
-			g.setColor(Color.GREEN);
+			g.setColor(this.color);
 			g.drawLine(-10, -8, 10, 0);
 			g.drawLine(-10, 8, 10, 0);
 			g.drawLine(-6, -6, -6, 6);
-			g.setColor(Color.WHITE);
+			g.setColor(WorldPanel.COLOR_DEFAULT);
 
 			//Draw the flames behind the ship if we thrusting, and not paused.
-			if (!game.isPaused() && thrustPressed && animationFrame % 6 < 3)
+			if (! game.isPaused() && this.thrustPressed && this.animationFrame % 6 < 3)
 			{
-				g.setColor(Color.ORANGE);
+				g.setColor(this.flamesColor);
 				g.drawLine(-6, -6, -12, 0);
 				g.drawLine(-6, 6, -12, 0);
-				g.setColor(Color.WHITE);
+				g.setColor(WorldPanel.COLOR_DEFAULT);
 			}
 		}
 	}
