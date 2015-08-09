@@ -7,7 +7,7 @@ package Game;
 
 import Entity.Entity;
 import Entity.Player;
-import IA.Basic;
+import IA.BasicFitghter;
 import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -193,7 +193,7 @@ public class Game extends JFrame
 	private boolean areEnemiesDead ()
 	{
 		for (Entity e : entities)
-			if (e.getClass() == Basic.class)
+			if (e.getClass() == BasicFitghter.class)
 				return false;
 		
 		return true;
@@ -325,7 +325,7 @@ public class Game extends JFrame
 			 * if (level = 5
 			 * new Boss (position)
 			 */
-			this.registerEntity(new Basic ());
+			this.registerEntity(new BasicFitghter ());
 		}
 		
 		if (this.deathCooldown > 0)
@@ -360,8 +360,8 @@ public class Game extends JFrame
 					
 					if (i != j && a.checkCollision(b) && ((a != this.player && b != this.player) || this.deathCooldown <= Game.INVULN_COOLDOWN_LIMIT))
 					{
-						a.handleCollision(this, b);
-						b.handleCollision(this, a);
+						a.checkCollision(this, b);
+						b.checkCollision(this, a);
 					}
 				}
 			}

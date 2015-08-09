@@ -18,46 +18,46 @@ public class Ship extends Entity
 {
 	protected List <Color> flamesMotorColor;
 	
-	private static final double DEFAULT_ROTATION = -Math.PI / 2.0;
-	private static final double MAX_VELOCITY_MAGNITUDE = 6.5;
-	private static final double ROTATION_SPEED = 0.052;
-	private static final double SLOW_RATE = 0.995;
-	private static final int MAX_CONSECUTIVE_SHOTS = 8;
+	private static final double SPEED_SHIP_MAX = 6.5;
+	private static final double SPEED_STOP = 0.995;
+	private static final double SPEED_ROTATION = 0.052;
+	private static final double SPEED_ROTATION_DEFAULT = -Math.PI / 2.0;
+	private static final int CONSECUTIVE_SHOTS_MAX = 8;
 	
 	private final Color MISSILE_COLOR;
-	private final int MAX_MISSILES;
+	private final int MISSILE_MAX;
 	private final int FIRE_RATE;
 	private final int RECHARGE_COOLDOWN;
 	
-	private List <Missile> missiles;
+	private List <Missile> missile;
 	private boolean thrustPressed;
-	private boolean rotateLeftPressed;
-	private boolean rotateRightPressed;
+	private boolean rotationRightPressed;
+	private boolean rotationLeftPressed;
 	private boolean firePressed;
 	private boolean firingEnabled;
-	private double speed;
-	private double missileMagnitude;
+	private double speedShip;
+	private double speedMissile;
 	private int consecutiveShots;
 	private int fireCooldown;
 	private int overheatCooldown;
 	private int animationFrame;
 
-	public Ship (Vector position, Vector velocity, Color shipColor, Color missileColor, double speedMagnitude, double missileMagnitude, double radius, int maxMissiles, int fireRate, int rechargeCooldown, int killScore)
+	public Ship (Vector position, Vector velocity, Color shipColor, Color missileColor, double speedShip, double speedMissile, double radius, int missileMax, int fireRate, int rechargeCooldown, int killScore)
 	{
 		super(position, velocity, shipColor, radius, killScore);
 		
 		this.flamesMotorColor = new ArrayList <> ();
-		this.missiles = new ArrayList <> ();
-		this.rotation = Ship.DEFAULT_ROTATION;
+		this.missile = new ArrayList <> ();
+		this.rotation = Ship.SPEED_ROTATION_DEFAULT;
 		this.thrustPressed = false;
-		this.rotateLeftPressed = false;
-		this.rotateRightPressed = false;
+		this.rotationLeftPressed = false;
+		this.rotationRightPressed = false;
 		this.firePressed = false;
 		this.firingEnabled = true;
-		this.speed = speedMagnitude;
-		this.missileMagnitude = missileMagnitude;
+		this.speedShip = speedShip;
+		this.speedMissile = speedMissile;
 		this.MISSILE_COLOR = missileColor;
-		this.MAX_MISSILES = maxMissiles;
+		this.MISSILE_MAX = missileMax;
 		this.FIRE_RATE = fireRate;
 		this.RECHARGE_COOLDOWN = rechargeCooldown;
 		this.fireCooldown = 0;
@@ -82,12 +82,12 @@ public class Ship extends Entity
 
 	public void setRotateLeft (boolean state)
 	{
-		this.rotateLeftPressed = state;
+		this.rotationLeftPressed = state;
 	}
 	
 	public void setRotateRight (boolean state)
 	{
-		this.rotateRightPressed = state;
+		this.rotationRightPressed = state;
 	}
 
 	public void setFiring (boolean state)
@@ -102,21 +102,21 @@ public class Ship extends Entity
 
 	public void setSpeedMagnitude (double magnitude)
 	{
-		this.speed = magnitude;
+		this.speedShip = magnitude;
 	}
 
 	public void setMissileMagnitude (double magnitude)
 	{
-		this.missileMagnitude = magnitude;
+		this.speedMissile = magnitude;
 	}
 
 	public void reset ()
 	{
-		this.rotation = DEFAULT_ROTATION;
+		this.rotation = SPEED_ROTATION_DEFAULT;
 		
 		this.position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
-		this.velocity.set(0.0, 0.0);
-		this.missiles.clear();
+		super.speed.set(0.0, 0.0);
+		this.missile.clear();
 	}
 
 	@Override
@@ -126,21 +126,21 @@ public class Ship extends Entity
 
 		this.animationFrame++;
 		
-		if (rotateLeftPressed != rotateRightPressed)
-			rotate(rotateLeftPressed ? - ROTATION_SPEED : ROTATION_SPEED);
+		if (rotationLeftPressed != rotationRightPressed)
+			rotate(rotationLeftPressed ? - SPEED_ROTATION : SPEED_ROTATION);
 		
 		if (thrustPressed)
 		{
-			velocity.add(new Vector(rotation).scale(this.speed));
+			super.speed.add(new Vector(rotation).scale(this.speedShip));
 			
-			if (velocity.getLengthSquared() >= MAX_VELOCITY_MAGNITUDE * MAX_VELOCITY_MAGNITUDE)
-				velocity.normalize().scale(MAX_VELOCITY_MAGNITUDE);
+			if (super.speed.getLengthSquared() >= SPEED_SHIP_MAX * SPEED_SHIP_MAX)
+				super.speed.normalize().scale(SPEED_SHIP_MAX);
 		}
 		
-		if (velocity.getLengthSquared() != 0.0)
-			velocity.scale(SLOW_RATE);
+		if (super.speed.getLengthSquared() != 0.0)
+			super.speed.scale(SPEED_STOP);
 		
-		Iterator <Missile> iter = missiles.iterator();
+		Iterator <Missile> iter = missile.iterator();
 		while (iter.hasNext())
 		{
 			Missile bullet = iter.next();
@@ -153,18 +153,18 @@ public class Ship extends Entity
 		this.overheatCooldown--;
 		if (firingEnabled && firePressed && fireCooldown <= 0 && overheatCooldown <= 0)
 		{
-			if (this.missiles.size() < this.MAX_MISSILES)
+			if (this.missile.size() < this.MISSILE_MAX)
 			{
 				this.fireCooldown = this.FIRE_RATE;
 				
-				Missile bullet = new Missile(this, this.MISSILE_COLOR, rotation, this.missileMagnitude);
+				Missile bullet = new Missile(this, this.MISSILE_COLOR, rotation, this.speedMissile);
 				
-				this.missiles.add(bullet);
+				this.missile.add(bullet);
 				game.registerEntity(bullet);
 			}
 			
 			this.consecutiveShots++;
-			if (this.consecutiveShots == Ship.MAX_CONSECUTIVE_SHOTS)
+			if (this.consecutiveShots == Ship.CONSECUTIVE_SHOTS_MAX)
 			{
 				this.consecutiveShots = 0;
 				this.overheatCooldown = this.RECHARGE_COOLDOWN;
@@ -178,7 +178,7 @@ public class Ship extends Entity
 	}
 
 	@Override
-	public void handleCollision (Game game, Entity other) {}
+	public void checkCollision (Game game, Entity other) {}
 
 	@Override
 	public void draw (Graphics2D g, Game game) {}

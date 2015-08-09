@@ -14,7 +14,7 @@ import java.awt.Graphics2D;
 public abstract class Entity
 {
 	protected Vector position;
-	protected Vector velocity;
+	protected Vector speed;
 	protected Color color;
 	protected double rotation;
 	protected double collisionRadius;
@@ -22,10 +22,10 @@ public abstract class Entity
 	private final int killScore;
 	private boolean needsRemoval;
 
-	public Entity (Vector position, Vector velocity, Color color, double radius, int killScore)
+	public Entity (Vector position, Vector speed, Color color, double radius, int killScore)
 	{
 		this.position = position;
-		this.velocity = velocity;
+		this.speed = speed;
 		this.color = color;
 		this.collisionRadius = radius;
 		this.rotation = 0.0f;
@@ -38,9 +38,9 @@ public abstract class Entity
 		return this.position;
 	}
 
-	public Vector getVelocity ()
+	public Vector getSpeed ()
 	{
-		return this.velocity;
+		return this.speed;
 	}
 
 	public boolean needsRemoval ()
@@ -76,7 +76,7 @@ public abstract class Entity
 
 	public void update (Game game)
 	{
-		this.position.add(this.velocity);
+		this.position.add(this.speed);
 		
 		if (this.position.x < 0.0f)
 			this.position.x = this.position.x + WorldPanel.W_MAP_PIXEL;
@@ -91,10 +91,10 @@ public abstract class Entity
 	{
 		double radius = entity.getCollisionRadius() + this.getCollisionRadius();
 		
-		return (position.getDistanceToSquared(entity.position) < radius * radius);
+		return (this.position.getDistanceToSquared(entity.position) < (radius * radius));
 	}
 
-	public abstract void handleCollision (Game game, Entity other);
+	public abstract void checkCollision (Game game, Entity other);
 
 	public abstract void draw (Graphics2D g, Game game);
 }

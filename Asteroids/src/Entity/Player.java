@@ -13,11 +13,11 @@ import java.awt.Graphics2D;
 
 public class Player extends Ship
 {
-	private static final double SPEED_MAGNITUDE = 0.0385;
-	private static final double SUPER_SPEED_MAGNITUDE = 0.2385;
-	private static final double MISSILE_MAGNITUDE = 6.75;
-	private static final double SUPER_SPEED_MISSILE_MAGNITUDE = 10.00;
-	private static final int MAX_MISSILES = 4;
+	private static final double SPEED_SHIP = 0.0385;
+	private static final double SUPER_SPEED_SHIP = 0.2385;
+	private static final double SPEED_MISSILE = 6.75;
+	private static final double SUPER_SPEED_MISSILE = 10.00;
+	private static final int MISSILE_MAX = 4;
 	private static final int FIRE_RATE = 4;
 	private static final int RECHARGE_COOLDOWN = 30;
 	
@@ -25,11 +25,11 @@ public class Player extends Ship
 
 	public Player ()
 	{
-		super (new Vector (300, 200), new Vector (1.1, 1.1), Color.BLUE, Color.GREEN, SPEED_MAGNITUDE, MISSILE_MAGNITUDE, 10.0, MAX_MISSILES, FIRE_RATE, RECHARGE_COOLDOWN, 0);
+		super (new Vector (300, 200), new Vector (0, 0), Color.BLUE, Color.GREEN, Player.SPEED_SHIP, Player.SPEED_MISSILE, 10.0, Player.MISSILE_MAX, Player.FIRE_RATE, Player.RECHARGE_COOLDOWN, 0);
 		
-		this.flamesMotorColor.add(Color.YELLOW);
-		this.flamesMotorColor.add(Color.RED);
-		this.flamesMotorColor.add(Color.YELLOW);
+		super.flamesMotorColor.add(Color.YELLOW);
+		super.flamesMotorColor.add(Color.RED);
+		super.flamesMotorColor.add(Color.YELLOW);
 		
 		this.superSpeed = false;
 	}
@@ -40,18 +40,18 @@ public class Player extends Ship
 		
 		if (this.superSpeed)
 		{
-			this.setSpeedMagnitude(Player.SUPER_SPEED_MAGNITUDE);
-			this.setMissileMagnitude(Player.SUPER_SPEED_MISSILE_MAGNITUDE);
+			this.setSpeedMagnitude(Player.SUPER_SPEED_SHIP);
+			this.setMissileMagnitude(Player.SUPER_SPEED_MISSILE);
 		}
 		else
 		{
-			this.setSpeedMagnitude(Player.SPEED_MAGNITUDE);
-			this.setMissileMagnitude(Player.MISSILE_MAGNITUDE);
+			this.setSpeedMagnitude(Player.SPEED_SHIP);
+			this.setMissileMagnitude(Player.SPEED_MISSILE);
 		}
 	}
 
 	@Override
-	public void handleCollision (Game game, Entity other)
+	public void checkCollision (Game game, Entity other)
 	{
 		if (other.getClass() == Ennemi.class)
 			game.killPlayer();
@@ -60,32 +60,32 @@ public class Player extends Ship
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		if (! game.isPlayerInvulnerable() || game.isPaused() || this.getAnimationFrame() % 20 < 10)
+		if (! game.isPlayerInvulnerable() || game.isPaused() || ((super.getAnimationFrame() % 20) < 10))
 		{
-			g.setColor(this.color);
+			g.setColor(super.color);
 			g.drawLine(-10, -8, 10, 0);
 			g.drawLine(-10, 8, 10, 0);
 			g.drawLine(-6, -6, -6, 6);
 			g.setColor(WorldPanel.COLOR_DEFAULT);
 
-			if (! game.isPaused() && this.isThrustPressed() && this.getAnimationFrame() % 6 < 3)
+			if (! game.isPaused() && super.isThrustPressed() && ((super.getAnimationFrame() % 6) < 3))
 			{
-				g.setColor(this.flamesMotorColor.get(0));
+				g.setColor(super.flamesMotorColor.get(0));
 				g.drawLine(-6, -6, -14, 0);
 				g.drawLine(-6, 6, -14, 0);
 				
-				g.setColor(this.flamesMotorColor.get(1));
+				g.setColor(super.flamesMotorColor.get(1));
 				g.fillOval(-14, -2, 7, 4);
 				
-				g.setColor(this.flamesMotorColor.get(1));
+				g.setColor(super.flamesMotorColor.get(1));
 				g.fillOval(-14, -1, 7, 4);
 				
 				if (this.superSpeed)
 				{
-					g.setColor(this.flamesMotorColor.get(1));
+					g.setColor(super.flamesMotorColor.get(1));
 					g.fillOval(-24, -3, 17, 7);
 					
-					g.setColor(this.flamesMotorColor.get(2));
+					g.setColor(super.flamesMotorColor.get(2));
 					g.fillOval(-20, -1, 9, 2);
 				}
 				

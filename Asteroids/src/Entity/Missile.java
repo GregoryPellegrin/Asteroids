@@ -13,15 +13,13 @@ import java.awt.Graphics2D;
 
 public class Missile extends Entity
 {
-	public static final double SPEED_MAGNITUDE = 6.75;
-	public static final double SUPER_SPEED_MAGNITUDE = 10.75;
-	
 	private static final int LIFESPAN_MAX = 60;
+	
 	private int lifeSpan;
 
-	public Missile (Entity owner, Color color, double direction, double speedMagnitude)
+	public Missile (Entity owner, Color color, double direction, double speed)
 	{
-		super(new Vector(owner.position), new Vector(direction).scale(speedMagnitude), color, 2.0, 0);
+		super(new Vector(owner.position), new Vector(direction).scale(speed), color, 2.0, 0);
 		
 		this.lifeSpan = LIFESPAN_MAX;
 	}
@@ -38,7 +36,7 @@ public class Missile extends Entity
 	}
 
 	@Override
-	public void handleCollision (Game game, Entity other)
+	public void checkCollision (Game game, Entity other)
 	{
 		if (other.getClass() != Player.class)
 			flagForRemoval();

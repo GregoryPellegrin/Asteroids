@@ -12,19 +12,19 @@ import java.awt.Graphics2D;
 
 public class Ennemi extends Ship
 {
-	public Ennemi (Vector position, Vector velocity, Color shipColor, Color missileColor, double speedMagnitude, double missileMagnitude, double radius, int maxMissiles, int fireRate, int rechargeCooldown, int killScore)
+	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int killScore)
 	{
-		super (position, velocity, shipColor, missileColor, speedMagnitude, missileMagnitude, radius, maxMissiles, fireRate, rechargeCooldown, killScore);
+		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, missileMax, fireRate, rechargeCooldown, killScore);
 	}
 
 	@Override
-	public void handleCollision (Game game, Entity other)
+	public void checkCollision (Game game, Entity other)
 	{
 		if ((other.getClass() == Missile.class) || (other.getClass() == Player.class))
 		{
-			this.flagForRemoval();
+			super.flagForRemoval();
 
-			game.addScore(this.getKillScore());
+			game.addScore(super.getKillScore());
 		}
 	}
 
