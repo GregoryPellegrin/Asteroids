@@ -1,3 +1,8 @@
+/*
+ * Gregory Pellegrin
+ * pellegrin.gregory.work@gmail.com
+ */
+
 package Entity;
 
 import Game.Game;
@@ -13,8 +18,9 @@ public abstract class Entity
 	protected Color color;
 	protected double rotation;
 	protected double collisionRadius;
+	
+	private final int killScore;
 	private boolean needsRemoval;
-	private int killScore;
 
 	public Entity (Vector position, Vector velocity, Color color, double radius, int killScore)
 	{
@@ -37,6 +43,11 @@ public abstract class Entity
 		return this.velocity;
 	}
 
+	public boolean needsRemoval ()
+	{
+		return this.needsRemoval;
+	}
+
 	public double getRotation ()
 	{
 		return this.rotation;
@@ -45,11 +56,6 @@ public abstract class Entity
 	public double getCollisionRadius ()
 	{
 		return this.collisionRadius;
-	}
-
-	public boolean needsRemoval ()
-	{
-		return this.needsRemoval;
 	}
 
 	public int getKillScore ()
@@ -61,15 +67,10 @@ public abstract class Entity
 	{
 		this.needsRemoval = true;
 	}
-
-	/**
-	 * Fait rotationner l'entity par amount
-	 *
-	 * @param amount Le montant de rotation
-	 */
+	
 	public void rotate (double amount)
 	{
-		this.rotation =  this.rotation + amount;
+		this.rotation = this.rotation + amount;
 		this.rotation %= Math.PI * 2;
 	}
 
@@ -85,25 +86,9 @@ public abstract class Entity
 		this.position.x %= WorldPanel.W_MAP_PIXEL;
 		this.position.y %= WorldPanel.H_MAP_PIXEL;
 	}
-
-	/**
-	 * Determines whether two Entities have collided.
-	 *
-	 * @param entity The Entity to check against.
-	 * @return Whether a collision occurred.
-	 */
+	
 	public boolean checkCollision (Entity entity)
 	{
-		/*
-		 * Here we use the Pythagorean Theorem to determine whether the two
-		 * Entities are close enough to collide.
-		 * 
-		 * The reason we are squaring everything is because it's much, much
-		 * quicker to square one variable than it is to take the square root
-		 * of another. While this game is simple enough that such minor
-		 * optimizations are unnecessary, it's still a good habit to get
-		 * into.
-		 */
 		double radius = entity.getCollisionRadius() + this.getCollisionRadius();
 		
 		return (position.getDistanceToSquared(entity.position) < radius * radius);

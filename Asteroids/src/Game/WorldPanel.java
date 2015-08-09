@@ -1,3 +1,8 @@
+/*
+ * Gregory Pellegrin
+ * pellegrin.gregory.work@gmail.com
+ */
+
 package Game;
 
 import Entity.Entity;
@@ -18,9 +23,9 @@ public class WorldPanel extends JPanel
 	public static final int W_MAP_PIXEL = 900;
 	public static final int H_MAP_PIXEL = 500;
 	
-	private static final long serialVersionUID = -5107151667799471396L;
-	private static final Font MENU_POLICE = new Font("Helvetica", Font.BOLD, 25);
-	private static final Font INFORMATION_POLICE = new Font("Helvetica", Font.BOLD, 20);
+	private static final Font MENU_FONT = new Font("Helvetica", Font.BOLD, 25);
+	private static final Font INFORMATION_FONT = new Font("Helvetica", Font.BOLD, 20);
+	
 	private Game game;
 
 	public WorldPanel (Game game)
@@ -112,19 +117,19 @@ public class WorldPanel extends JPanel
 
 		if (! this.game.isGameOver())
 		{
-			g.setFont(WorldPanel.INFORMATION_POLICE);
+			g.setFont(WorldPanel.INFORMATION_FONT);
 			g.setColor(Color.RED);
 			g.drawString("SCORE", 10, 25);
 			
-			g.setFont(WorldPanel.INFORMATION_POLICE);
+			g.setFont(WorldPanel.INFORMATION_FONT);
 			g.setColor(Color.CYAN);
 			g.drawString(String.valueOf(this.game.getScore()), 10, 50);
 			
-			g.setFont(WorldPanel.INFORMATION_POLICE);
+			g.setFont(WorldPanel.INFORMATION_FONT);
 			g.setColor(Color.RED);
 			g.drawString("HIGH SCORE", WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth("HIGH SCORE") / 2, 25);
 			
-			g.setFont(WorldPanel.INFORMATION_POLICE);
+			g.setFont(WorldPanel.INFORMATION_FONT);
 			g.setColor(Color.CYAN);
 			g.drawString(String.valueOf(this.game.getScore()), WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth(String.valueOf(this.game.getScore())) / 2, 50);
 			
@@ -134,20 +139,20 @@ public class WorldPanel extends JPanel
 		if (this.game.isGameOver())
 		{
 			g.setColor(Color.RED);
-			this.drawTextCentered("GAME OVER", MENU_POLICE, g2d, -25);
+			this.drawTextCentered("GAME OVER", MENU_FONT, g2d, -25);
 			
 			g.setColor(Color.CYAN);
-			this.drawTextCentered("FINAL SCORE " + this.game.getScore(), MENU_POLICE, g2d, 10);
+			this.drawTextCentered("FINAL SCORE " + this.game.getScore(), MENU_FONT, g2d, 10);
 			
 			g2d.setColor(WorldPanel.COLOR_DEFAULT);
 		}
 		else
 		{
 			if (this.game.isPaused())
-				this.drawTextCentered("PAUSED", MENU_POLICE, g2d, -25);
+				this.drawTextCentered("PAUSED", MENU_FONT, g2d, -25);
 			else
 				if (this.game.isShowingLevel())
-					this.drawTextCentered("LEVEL " + this.game.getLevel(), MENU_POLICE, g2d, -25);
+					this.drawTextCentered("LEVEL " + this.game.getLevel(), MENU_FONT, g2d, -25);
 		}
 
 		for (int i = 0; i < this.game.getLives(); i++)

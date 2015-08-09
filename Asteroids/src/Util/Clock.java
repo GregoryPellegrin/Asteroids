@@ -1,3 +1,8 @@
+/*
+ * Gregory Pellegrin
+ * pellegrin.gregory.work@gmail.com
+ */
+
 package Util;
 
 public class Clock

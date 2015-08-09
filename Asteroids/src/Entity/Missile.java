@@ -1,3 +1,8 @@
+/*
+ * Gregory Pellegrin
+ * pellegrin.gregory.work@gmail.com
+ */
+
 package Entity;
 
 import Game.Game;
@@ -8,13 +13,15 @@ import java.awt.Graphics2D;
 
 public class Missile extends Entity
 {
-	private static final double SPEED_MAGNITUDE = 6.75;
+	public static final double SPEED_MAGNITUDE = 6.75;
+	public static final double SUPER_SPEED_MAGNITUDE = 10.75;
+	
 	private static final int LIFESPAN_MAX = 60;
 	private int lifeSpan;
 
-	public Missile (Entity owner, Color color, double direction)
+	public Missile (Entity owner, Color color, double direction, double speedMagnitude)
 	{
-		super(new Vector(owner.position), new Vector(direction).scale(SPEED_MAGNITUDE), color, 2.0, 0);
+		super(new Vector(owner.position), new Vector(direction).scale(speedMagnitude), color, 2.0, 0);
 		
 		this.lifeSpan = LIFESPAN_MAX;
 	}
