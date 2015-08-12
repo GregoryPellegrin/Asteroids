@@ -19,7 +19,7 @@ public class Missile extends Entity
 
 	public Missile (Entity owner, Color color, double direction, double speed)
 	{
-		super(new Vector(owner.position), new Vector(direction).scale(speed), color, 2.0, 0);
+		super(new Vector(owner.getPosition()), new Vector(direction).scale(speed), color, 2.0, 0);
 		
 		this.lifeSpan = LIFESPAN_MAX;
 	}
@@ -45,7 +45,7 @@ public class Missile extends Entity
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		g.setColor(this.color);
+		g.setColor(super.color);
 		g.drawOval(-1, -1, 2, 2);
 		
 		g.setColor(WorldPanel.COLOR_DEFAULT);

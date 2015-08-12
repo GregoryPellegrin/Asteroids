@@ -5,6 +5,7 @@
 
 package Game;
 
+import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
 import IA.BasicFitghter;
@@ -12,15 +13,16 @@ import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import javax.swing.JFrame;
 
 public class Game extends JFrame
 {
+	private static final int GAME_MODE_MAX = 3;
 	private static final int FRAMES_PER_SECOND = 60;
 	private static final long FRAME_TIME = (long) (1000000000.0 / FRAMES_PER_SECOND);
 	private static final int DISPLAY_LEVEL_LIMIT = 60;
@@ -29,11 +31,13 @@ public class Game extends JFrame
 	private static final int INVULN_COOLDOWN_LIMIT = 0;
 	private static final int RESET_COOLDOWN_LIMIT = 120;
 	
+	private final KeyAdapter menuListener;
+	private final KeyAdapter soloModeListener;
+	private final WorldPanel world;	
+	
 	private List <Entity> entities;
 	private List <Entity> pendingEntities;
-	private WorldPanel world;
 	private Clock logicTimer;
-	private Random random;
 	private Player player;
 	private boolean isGameOver;
 	private boolean restartGame;
@@ -53,7 +57,26 @@ public class Game extends JFrame
 		this.setResizable(false);
 		this.add(this.world = new WorldPanel (this), BorderLayout.CENTER);
 		
-		this.addKeyListener(new KeyAdapter ()
+		this.menuListener = new KeyAdapter ()
+		{
+			@Override
+			public void keyPressed (KeyEvent e)
+			{
+				switch (e.getKeyCode())
+				{
+					case KeyEvent.VK_UP:
+						break;
+
+					case KeyEvent.VK_DOWN:
+						break;
+
+					case KeyEvent.VK_SPACE:
+						break;
+				}
+			}
+		};
+		
+		this.soloModeListener = new KeyAdapter ()
 		{
 			@Override
 			public void keyPressed (KeyEvent e)
@@ -61,21 +84,18 @@ public class Game extends JFrame
 				switch (e.getKeyCode())
 				{
 					case KeyEvent.VK_Z:
-					case KeyEvent.VK_UP:
 						if (! checkForRestart())
-							player.setThrusting(true);
-						break;
-
-					case KeyEvent.VK_Q:
-					case KeyEvent.VK_LEFT:
-						if (! checkForRestart())
-							player.setRotateLeft(true);
+							player.setMove(true);
 						break;
 
 					case KeyEvent.VK_D:
-					case KeyEvent.VK_RIGHT:
 						if (! checkForRestart())
 							player.setRotateRight(true);
+						break;
+
+					case KeyEvent.VK_Q:
+						if (! checkForRestart())
+							player.setRotateLeft(true);
 						break;
 
 					case KeyEvent.VK_O:
@@ -105,18 +125,15 @@ public class Game extends JFrame
 				switch (e.getKeyCode())
 				{
 					case KeyEvent.VK_Z:
-					case KeyEvent.VK_UP:
-						player.setThrusting(false);
-						break;
-
-					case KeyEvent.VK_Q:
-					case KeyEvent.VK_LEFT:
-						player.setRotateLeft(false);
+						player.setMove(false);
 						break;
 
 					case KeyEvent.VK_D:
-					case KeyEvent.VK_RIGHT:
 						player.setRotateRight(false);
+						break;
+
+					case KeyEvent.VK_Q:
+						player.setRotateLeft(false);
 						break;
 
 					case KeyEvent.VK_O:
@@ -128,7 +145,7 @@ public class Game extends JFrame
 						break;
 				}
 			}
-		});
+		};
 
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -145,11 +162,6 @@ public class Game extends JFrame
 		return this.player;
 	}
 	
-	public Random getRandom ()
-	{
-		return this.random;
-	}
-
 	public boolean isGameOver ()
 	{
 		return this.isGameOver;
@@ -192,8 +204,8 @@ public class Game extends JFrame
 	
 	private boolean areEnemiesDead ()
 	{
-		for (Entity e : entities)
-			if (e.getClass() == BasicFitghter.class)
+		for (Entity e : this.entities)
+			if (e.getClass().getSuperclass() == Ennemi.class)
 				return false;
 		
 		return true;
@@ -201,7 +213,7 @@ public class Game extends JFrame
 
 	private boolean checkForRestart ()
 	{
-		boolean restart = (this.isGameOver && this.restartCooldown <= 0);
+		boolean restart = (this.isGameOver && (this.restartCooldown <= 0));
 		
 		if (restart)
 			this.restartGame = true;
@@ -224,6 +236,12 @@ public class Game extends JFrame
 		this.pendingEntities.clear();
 		this.entities.clear();
 		this.entities.add(this.player);
+	}
+	
+	private void removeKeyListener ()
+	{
+		this.removeKeyListener(this.menuListener);
+		this.removeKeyListener(this.soloModeListener);
 	}
 	
 	public void killPlayer ()
@@ -251,12 +269,14 @@ public class Game extends JFrame
 		this.isGameOver = false;
 		this.restartGame = false;
 		
-		resetEntityLists();
+		this.resetEntityLists();
+		this.removeKeyListener();
+		
+		this.addKeyListener(this.soloModeListener);
 	}
 
 	private void startGame ()
 	{
-		this.random = new Random ();
 		this.entities = new LinkedList <> ();
 		this.pendingEntities = new ArrayList <> ();
 		this.player = new Player ();
@@ -283,7 +303,7 @@ public class Game extends JFrame
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
+					System.out.println(e.getMessage());
 				}
 		}
 	}

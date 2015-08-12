@@ -6,14 +6,19 @@
 package Game;
 
 import Entity.Entity;
+import Entity.Star;
 import Util.Vector;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JPanel;
 
@@ -22,21 +27,40 @@ public class WorldPanel extends JPanel
 	public static final Color COLOR_DEFAULT = Color.WHITE;
 	public static final int W_MAP_PIXEL = 900;
 	public static final int H_MAP_PIXEL = 500;
+	public static final int STAR_BACKGROUND_MAX = 30;
 	
-	private static final Font MENU_FONT = new Font("Helvetica", Font.BOLD, 25);
-	private static final Font INFORMATION_FONT = new Font("Helvetica", Font.BOLD, 20);
+	private final ArrayList <Star> starBackground = new ArrayList <> ();
+	private final Game game;
 	
-	private Game game;
+	private Font massiveFont;
+	private Font largeFont;
+	private Font mediumFont;
 
 	public WorldPanel (Game game)
 	{
 		this.game = game;
 
-		this.setPreferredSize(new Dimension(WorldPanel.W_MAP_PIXEL, WorldPanel.H_MAP_PIXEL));
+		this.setPreferredSize(new Dimension (WorldPanel.W_MAP_PIXEL, WorldPanel.H_MAP_PIXEL));
 		this.setBackground(Color.BLACK);
+		
+		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
+			this.starBackground.add(new Star ());
+		
+		try
+		{
+			Font arcadeFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ressources/arcadeClassic.ttf"));
+			
+			massiveFont = arcadeFont.deriveFont(Font.PLAIN, 40);
+			largeFont = arcadeFont.deriveFont(Font.PLAIN, 30);
+			mediumFont = arcadeFont.deriveFont(Font.PLAIN, 25);
+		}
+		catch (FontFormatException | IOException e)
+		{
+			System.out.println(e.getMessage());
+		}
 	}
 
-	private void drawTextCentered (String text, Font font, Graphics2D g, int y)
+	private void drawTextCentered (Graphics2D g, Font font, String text, int y)
 	{
 		g.setFont(font);
 		g.drawString(text, WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth(text) / 2, WorldPanel.H_MAP_PIXEL / 2 + y);
@@ -61,77 +85,54 @@ public class WorldPanel extends JPanel
 
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 		g2d.setColor(WorldPanel.COLOR_DEFAULT);
-
-		//Grab a reference to the current "identity" transformation, so we can reset for each object.
+		
 		AffineTransform identity = g2d.getTransform();
 
 		Iterator <Entity> iter = this.game.getEntities().iterator();
-		
 		while (iter.hasNext())
 		{
 			Entity entity = iter.next();
 			
-			/*
-			 * We should only draw the player if it is not dead, so we need to
-			 * ensure that the entity can be rendered.
-			 */
-			if (entity != this.game.getPlayer() || this.game.canDrawPlayer())
+			if ((entity != this.game.getPlayer()) || this.game.canDrawPlayer())
 			{
-				Vector pos = entity.getPosition(); //Get the position of the entity.
+				Vector pos = entity.getPosition();
 
-				//Draw the entity at it's actual position, and reset the transformation.
 				this.drawEntity(g2d, entity, pos.x, pos.y);
 				g2d.setTransform(identity);
 
-				/*
-				 * Here we need to determine whether or not the entity is close enough
-				 * to the edge of the window to wrap around to the other side.
-				 * 
-				 * The conditional statements might look confusing, but they're
-				 * equivalent to:
-				 * 
-				 * double x = pos.x;
-				 * if(pos.x < radius) {
-				 *     x = pos.x + WORLD_SIZE;
-				 * } else if(pos.x > WORLD_SIZE - radius) {
-				 *     x = pos.x - WORLD_SIZE;
-				 * }
-				 * 
-				 */
 				double radius = entity.getCollisionRadius();
 				double x = (pos.x < radius) ? pos.x + WorldPanel.W_MAP_PIXEL
 						: (pos.x > WorldPanel.W_MAP_PIXEL - radius) ? pos.x - WorldPanel.W_MAP_PIXEL : pos.x;
 				double y = (pos.y < radius) ? pos.y + WorldPanel.H_MAP_PIXEL
 						: (pos.y > WorldPanel.H_MAP_PIXEL - radius) ? pos.y - WorldPanel.H_MAP_PIXEL : pos.y;
 
-				//Draw the entity at it's wrapped position, and reset the transformation.
-				if (x != pos.x || y != pos.y)
+				if ((x != pos.x) || (y != pos.y))
 				{
 					this.drawEntity(g2d, entity, x, y);
 					g2d.setTransform(identity);
 				}
 			}
 		}
+		
+		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
+		{
+			//g2d.translate(1, 1);
+			this.starBackground.get(i).update();
+			this.starBackground.get(i).drawStar(g2d);
+			
+			//g2d.setTransform(identity);
+		}
 
 		if (! this.game.isGameOver())
 		{
-			g.setFont(WorldPanel.INFORMATION_FONT);
+			g.setFont(this.largeFont);
 			g.setColor(Color.RED);
 			g.drawString("SCORE", 10, 25);
 			
-			g.setFont(WorldPanel.INFORMATION_FONT);
+			g.setFont(this.mediumFont);
 			g.setColor(Color.CYAN);
 			g.drawString(String.valueOf(this.game.getScore()), 10, 50);
-			
-			g.setFont(WorldPanel.INFORMATION_FONT);
-			g.setColor(Color.RED);
-			g.drawString("HIGH SCORE", WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth("HIGH SCORE") / 2, 25);
-			
-			g.setFont(WorldPanel.INFORMATION_FONT);
-			g.setColor(Color.CYAN);
-			g.drawString(String.valueOf(this.game.getScore()), WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth(String.valueOf(this.game.getScore())) / 2, 50);
 			
 			g2d.setColor(WorldPanel.COLOR_DEFAULT);
 		}
@@ -139,20 +140,20 @@ public class WorldPanel extends JPanel
 		if (this.game.isGameOver())
 		{
 			g.setColor(Color.RED);
-			this.drawTextCentered("GAME OVER", MENU_FONT, g2d, -25);
+			this.drawTextCentered(g2d, this.massiveFont, "GAME OVER", -25);
 			
 			g.setColor(Color.CYAN);
-			this.drawTextCentered("FINAL SCORE " + this.game.getScore(), MENU_FONT, g2d, 10);
+			this.drawTextCentered(g2d, this.largeFont, "FINAL SCORE " + this.game.getScore(), 10);
 			
 			g2d.setColor(WorldPanel.COLOR_DEFAULT);
 		}
 		else
 		{
 			if (this.game.isPaused())
-				this.drawTextCentered("PAUSED", MENU_FONT, g2d, -25);
+				this.drawTextCentered(g2d, this.massiveFont, "PAUSED", -25);
 			else
 				if (this.game.isShowingLevel())
-					this.drawTextCentered("LEVEL " + this.game.getLevel(), MENU_FONT, g2d, -25);
+					this.drawTextCentered(g2d, this.massiveFont, "LEVEL " + this.game.getLevel(), -25);
 		}
 
 		for (int i = 0; i < this.game.getLives(); i++)

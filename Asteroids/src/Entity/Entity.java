@@ -38,11 +38,6 @@ public abstract class Entity
 		return this.position;
 	}
 
-	public Vector getSpeed ()
-	{
-		return this.speed;
-	}
-
 	public boolean needsRemoval ()
 	{
 		return this.needsRemoval;
@@ -89,7 +84,7 @@ public abstract class Entity
 	
 	public boolean checkCollision (Entity entity)
 	{
-		double radius = entity.getCollisionRadius() + this.getCollisionRadius();
+		double radius = entity.getCollisionRadius() + this.collisionRadius;
 		
 		return (this.position.getDistanceToSquared(entity.position) < (radius * radius));
 	}

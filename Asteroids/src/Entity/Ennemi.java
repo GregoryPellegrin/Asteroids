@@ -20,7 +20,7 @@ public class Ennemi extends Ship
 	@Override
 	public void checkCollision (Game game, Entity other)
 	{
-		if ((other.getClass() == Missile.class) || (other.getClass() == Player.class))
+		if (other.getClass() == Missile.class)
 		{
 			super.flagForRemoval();
 

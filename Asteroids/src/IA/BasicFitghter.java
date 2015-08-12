@@ -22,7 +22,7 @@ public class BasicFitghter extends Ennemi
 	
 	public BasicFitghter ()
 	{
-		super (new Vector (200, 200), new Vector (2, 2), Color.RED, Color.RED, BasicFitghter.SPEED_SHIP, BasicFitghter.SPEED_MISSILE, 10.0, BasicFitghter.MISSILE_MAX, BasicFitghter.FIRE_RATE, BasicFitghter.RECHARGE_COOLDOWN, 100);
+		super (new Vector (200, 200), new Vector (1, 0), Color.RED, Color.RED, BasicFitghter.SPEED_SHIP, BasicFitghter.SPEED_MISSILE, 10.0, BasicFitghter.MISSILE_MAX, BasicFitghter.FIRE_RATE, BasicFitghter.RECHARGE_COOLDOWN, 100);
 		
 		super.flamesMotorColor.add(Color.YELLOW);
 		super.flamesMotorColor.add(Color.RED);
@@ -31,14 +31,14 @@ public class BasicFitghter extends Ennemi
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		g.setColor(this.color);
+		g.setColor(super.color);
 		g.drawLine(-10, -8, 10, 0);
 		g.drawLine(-10, 8, 10, 0);
 		g.drawLine(-6, -6, -6, 6);
 
 		g.setColor(WorldPanel.COLOR_DEFAULT);
 
-		if (! game.isPaused() && super.isThrustPressed() && ((super.getAnimationFrame() % 6) < 3))
+		if (! game.isPaused() && super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
 		{
 			g.setColor(super.flamesMotorColor.get(0));
 			g.drawLine(-6, -6, -14, 0);

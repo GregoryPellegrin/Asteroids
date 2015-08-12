@@ -30,7 +30,7 @@ public class Ship extends Entity
 	private final int RECHARGE_COOLDOWN;
 	
 	private List <Missile> missile;
-	private boolean thrustPressed;
+	private boolean movePressed;
 	private boolean rotationRightPressed;
 	private boolean rotationLeftPressed;
 	private boolean firePressed;
@@ -46,20 +46,21 @@ public class Ship extends Entity
 	{
 		super(position, velocity, shipColor, radius, killScore);
 		
+		this.MISSILE_COLOR = missileColor;
+		this.MISSILE_MAX = missileMax;
+		this.FIRE_RATE = fireRate;
+		this.RECHARGE_COOLDOWN = rechargeCooldown;
+		
 		this.flamesMotorColor = new ArrayList <> ();
 		this.missile = new ArrayList <> ();
 		this.rotation = Ship.SPEED_ROTATION_DEFAULT;
-		this.thrustPressed = false;
+		this.movePressed = false;
 		this.rotationLeftPressed = false;
 		this.rotationRightPressed = false;
 		this.firePressed = false;
 		this.firingEnabled = true;
 		this.speedShip = speedShip;
 		this.speedMissile = speedMissile;
-		this.MISSILE_COLOR = missileColor;
-		this.MISSILE_MAX = missileMax;
-		this.FIRE_RATE = fireRate;
-		this.RECHARGE_COOLDOWN = rechargeCooldown;
 		this.fireCooldown = 0;
 		this.overheatCooldown = 0;
 		this.animationFrame = 0;
@@ -70,14 +71,14 @@ public class Ship extends Entity
 		return this.animationFrame;
 	}
 	
-	public boolean isThrustPressed ()
+	public boolean isMovePressed ()
 	{
-		return this.thrustPressed;
+		return this.movePressed;
 	}
 
-	public void setThrusting (boolean state)
+	public void setMove (boolean state)
 	{
-		this.thrustPressed = state;
+		this.movePressed = state;
 	}
 
 	public void setRotateLeft (boolean state)
@@ -100,22 +101,19 @@ public class Ship extends Entity
 		this.firingEnabled = state;
 	}
 
-	public void setSpeedMagnitude (double magnitude)
+	public void setSpeedShip (double speed)
 	{
-		this.speedShip = magnitude;
+		this.speedShip = speed;
 	}
 
-	public void setMissileMagnitude (double magnitude)
+	public void setSpeedMissile (double speed)
 	{
-		this.speedMissile = magnitude;
+		this.speedMissile = speed;
 	}
 
 	public void reset ()
 	{
 		this.rotation = SPEED_ROTATION_DEFAULT;
-		
-		this.position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
-		super.speed.set(0.0, 0.0);
 		this.missile.clear();
 	}
 
@@ -126,21 +124,21 @@ public class Ship extends Entity
 
 		this.animationFrame++;
 		
-		if (rotationLeftPressed != rotationRightPressed)
-			rotate(rotationLeftPressed ? - SPEED_ROTATION : SPEED_ROTATION);
+		if (this.rotationLeftPressed != this.rotationRightPressed)
+			super.rotate(this.rotationLeftPressed ? - Ship.SPEED_ROTATION : Ship.SPEED_ROTATION);
 		
-		if (thrustPressed)
+		if (this.movePressed)
 		{
-			super.speed.add(new Vector(rotation).scale(this.speedShip));
+			super.speed.add(new Vector (this.rotation).scale(this.speedShip));
 			
-			if (super.speed.getLengthSquared() >= SPEED_SHIP_MAX * SPEED_SHIP_MAX)
-				super.speed.normalize().scale(SPEED_SHIP_MAX);
+			if (super.speed.getLengthSquared() >= Ship.SPEED_SHIP_MAX * Ship.SPEED_SHIP_MAX)
+				super.speed.normalize().scale(Ship.SPEED_SHIP_MAX);
 		}
 		
 		if (super.speed.getLengthSquared() != 0.0)
-			super.speed.scale(SPEED_STOP);
+			super.speed.scale(Ship.SPEED_STOP);
 		
-		Iterator <Missile> iter = missile.iterator();
+		Iterator <Missile> iter = this.missile.iterator();
 		while (iter.hasNext())
 		{
 			Missile bullet = iter.next();
@@ -151,13 +149,13 @@ public class Ship extends Entity
 		
 		this.fireCooldown--;
 		this.overheatCooldown--;
-		if (firingEnabled && firePressed && fireCooldown <= 0 && overheatCooldown <= 0)
+		if (this.firingEnabled && this.firePressed && (this.fireCooldown <= 0) && (this.overheatCooldown <= 0))
 		{
 			if (this.missile.size() < this.MISSILE_MAX)
 			{
 				this.fireCooldown = this.FIRE_RATE;
 				
-				Missile bullet = new Missile(this, this.MISSILE_COLOR, rotation, this.speedMissile);
+				Missile bullet = new Missile(this, this.MISSILE_COLOR, this.rotation, this.speedMissile);
 				
 				this.missile.add(bullet);
 				game.registerEntity(bullet);

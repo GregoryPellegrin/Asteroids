@@ -34,26 +34,35 @@ public class Player extends Ship
 		this.superSpeed = false;
 	}
 	
-	public void setSuperSpeed (boolean state)
+	public void setSuperSpeed (boolean superSpeed)
 	{
-		this.superSpeed = state;
-		
-		if (this.superSpeed)
+		if (superSpeed)
 		{
-			this.setSpeedMagnitude(Player.SUPER_SPEED_SHIP);
-			this.setMissileMagnitude(Player.SUPER_SPEED_MISSILE);
+			this.superSpeed = true;
+			this.setSpeedShip(Player.SUPER_SPEED_SHIP);
+			this.setSpeedMissile(Player.SUPER_SPEED_MISSILE);
 		}
 		else
 		{
-			this.setSpeedMagnitude(Player.SPEED_SHIP);
-			this.setMissileMagnitude(Player.SPEED_MISSILE);
+			this.superSpeed = false;
+			this.setSpeedShip(Player.SPEED_SHIP);
+			this.setSpeedMissile(Player.SPEED_MISSILE);
 		}
+	}
+
+	@Override
+	public void reset ()
+	{
+		super.reset();
+		
+		super.position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
+		super.speed.set(0.0, 0.0);
 	}
 
 	@Override
 	public void checkCollision (Game game, Entity other)
 	{
-		if (other.getClass() == Ennemi.class)
+		if (other.getClass().getSuperclass() == Ennemi.class)
 			game.killPlayer();
 	}
 
@@ -68,7 +77,7 @@ public class Player extends Ship
 			g.drawLine(-6, -6, -6, 6);
 			g.setColor(WorldPanel.COLOR_DEFAULT);
 
-			if (! game.isPaused() && super.isThrustPressed() && ((super.getAnimationFrame() % 6) < 3))
+			if (! game.isPaused() && super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
 			{
 				g.setColor(super.flamesMotorColor.get(0));
 				g.drawLine(-6, -6, -14, 0);
