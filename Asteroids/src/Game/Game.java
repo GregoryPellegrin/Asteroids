@@ -13,7 +13,6 @@ import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,14 +32,17 @@ public class Game extends JFrame
 	
 	private final KeyAdapter menuListener;
 	private final KeyAdapter soloModeListener;
-	private final WorldPanel world;	
+	private final MenuPanel menu;
+	private final WorldPanel world;
 	
 	private List <Entity> entities;
 	private List <Entity> pendingEntities;
 	private Clock logicTimer;
 	private Player player;
+	private boolean isGameModeChoose;
 	private boolean isGameOver;
 	private boolean restartGame;
+	private int gameMode;
 	private int deathCooldown;
 	private int showLevelCooldown;
 	private int restartCooldown;
@@ -52,10 +54,8 @@ public class Game extends JFrame
 	{
 		super ("Asteroids");
 		
-		this.setLayout(new BorderLayout ());
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setResizable(false);
-		this.add(this.world = new WorldPanel (this), BorderLayout.CENTER);
+		this.menu = new MenuPanel (this);
+		this.world = new WorldPanel (this);
 		
 		this.menuListener = new KeyAdapter ()
 		{
@@ -65,12 +65,15 @@ public class Game extends JFrame
 				switch (e.getKeyCode())
 				{
 					case KeyEvent.VK_UP:
+						changeGameModeUp();
 						break;
 
 					case KeyEvent.VK_DOWN:
+						changeGameModeDown();
 						break;
 
 					case KeyEvent.VK_SPACE:
+						gameModeIsChoose();
 						break;
 				}
 			}
@@ -131,7 +134,7 @@ public class Game extends JFrame
 					case KeyEvent.VK_D:
 						player.setRotateRight(false);
 						break;
-
+						
 					case KeyEvent.VK_Q:
 						player.setRotateLeft(false);
 						break;
@@ -146,7 +149,13 @@ public class Game extends JFrame
 				}
 			}
 		};
-
+		
+		this.setLayout(new BorderLayout ());
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setResizable(false);
+		
+		this.add(this.menu, BorderLayout.CENTER);
+		
 		this.pack();
 		this.setLocationRelativeTo(null);
 		this.setVisible(true);
@@ -220,10 +229,43 @@ public class Game extends JFrame
 		
 		return restart;
 	}
+	
+	public void changeGameModeUp ()
+	{
+		if (this.gameMode > 0)
+			this.gameMode--;
+	}
+	
+	public void changeGameModeDown ()
+	{
+		if (this.gameMode < (Game.GAME_MODE_MAX - 1))
+			this.gameMode++;
+	}
+	
+	public void gameModeIsChoose ()
+	{
+		this.isGameModeChoose = true;
+	}
 
 	public void addScore (int score)
 	{
 		this.score = this.score + score;
+	}
+	
+	public void killPlayer ()
+	{
+		this.lives--;
+
+		if (this.lives == 0)
+		{
+			this.isGameOver = true;
+			this.restartCooldown = Game.RESET_COOLDOWN_LIMIT;
+			this.deathCooldown = Integer.MAX_VALUE;
+		}
+		else
+			this.deathCooldown = Game.DEATH_COOLDOWN_LIMIT;
+
+		this.player.setFiringEnabled(false);
 	}
 
 	public void registerEntity (Entity entity)
@@ -244,20 +286,20 @@ public class Game extends JFrame
 		this.removeKeyListener(this.soloModeListener);
 	}
 	
-	public void killPlayer ()
+	private void resetMenu ()
 	{
-		this.lives--;
-
-		if (this.lives == 0)
-		{
-			this.isGameOver = true;
-			this.restartCooldown = Game.RESET_COOLDOWN_LIMIT;
-			this.deathCooldown = Integer.MAX_VALUE;
-		}
-		else
-			this.deathCooldown = Game.DEATH_COOLDOWN_LIMIT;
-
-		this.player.setFiringEnabled(false);
+		
+		this.isGameModeChoose = false;
+		this.gameMode = 0;
+		
+		this.resetEntityLists();
+		this.removeKeyListener();
+		
+		this.remove(this.world);
+		this.add(this.menu, BorderLayout.CENTER);
+		this.revalidate();
+		
+		this.addKeyListener(this.menuListener);
 	}
 	
 	private void resetGame ()
@@ -272,7 +314,43 @@ public class Game extends JFrame
 		this.resetEntityLists();
 		this.removeKeyListener();
 		
+		this.remove(this.menu);
+		this.add(this.world, BorderLayout.CENTER);
+		this.revalidate();
+		
 		this.addKeyListener(this.soloModeListener);
+	}
+
+	private void startMenu ()
+	{
+		this.entities = new LinkedList <> ();
+		this.pendingEntities = new ArrayList <> ();
+
+		this.resetMenu();
+
+		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
+		
+		while (! this.isGameModeChoose)
+		{
+			long start = System.nanoTime();
+			
+			this.logicTimer.update();
+			for (int i = 0; i < 5 && this.logicTimer.hasElapsedCycle(); i++)
+				this.updateMenu();
+
+			this.menu.repaint();
+
+			long delta = Game.FRAME_TIME - (System.nanoTime() - start);			
+			if (delta > 0)
+				try
+				{
+					Thread.sleep(delta / 1000000L, (int) delta % 1000000);
+				}
+				catch (Exception e)
+				{
+					System.out.println(e.getMessage());
+				}
+		}
 	}
 
 	private void startGame ()
@@ -285,7 +363,7 @@ public class Game extends JFrame
 
 		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
 		
-		while (true)
+		while (! this.isGameOver && ! this.restartGame)
 		{
 			long start = System.nanoTime();
 			
@@ -308,6 +386,10 @@ public class Game extends JFrame
 		}
 	}
 	
+	private void updateMenu ()
+	{
+	}
+	
 	private void updateGame ()
 	{
 		this.entities.addAll(this.pendingEntities);
@@ -319,9 +401,6 @@ public class Game extends JFrame
 		if (this.showLevelCooldown > 0)
 			this.showLevelCooldown--;
 
-		if (this.isGameOver && this.restartGame)
-			this.resetGame();
-
 		if (! this.isGameOver && this.areEnemiesDead())
 		{
 			this.level++;
@@ -331,12 +410,13 @@ public class Game extends JFrame
 
 			this.player.reset();
 			this.player.setFiringEnabled(true);
-
+			
 			/*
 			 * ENNEMIS
 			 * 
 			 * if (level < 3
 			 * new Chasseur (position)
+			 * starSpeed++
 			 * 
 			 * if (level > 3
 			 * new Chasseur (position)
@@ -397,6 +477,10 @@ public class Game extends JFrame
 	{
 		Game game = new Game();
 		
-		game.startGame();
+		while (true)
+		{
+			game.startMenu();
+			game.startGame();
+		}
 	}
 }

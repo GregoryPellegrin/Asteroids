@@ -47,10 +47,12 @@ public class Star
 		this.h = w;
 	}
 	
-	public void update ()
+	public void update (int starSpeed)
 	{
-		if ((int) (Math.random() * 20) == 0)
+		if ((int) (Math.random() * 50) == 0)
 			this.reCreate();
+		
+		this.y = this.y + starSpeed;
 	}
 	
 	public void drawStar (Graphics2D g)

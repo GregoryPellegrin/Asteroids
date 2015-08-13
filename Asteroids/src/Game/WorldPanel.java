@@ -27,7 +27,7 @@ public class WorldPanel extends JPanel
 	public static final Color COLOR_DEFAULT = Color.WHITE;
 	public static final int W_MAP_PIXEL = 900;
 	public static final int H_MAP_PIXEL = 500;
-	public static final int STAR_BACKGROUND_MAX = 30;
+	public static final int STAR_BACKGROUND_MAX = 50;
 	
 	private final ArrayList <Star> starBackground = new ArrayList <> ();
 	private final Game game;
@@ -63,7 +63,7 @@ public class WorldPanel extends JPanel
 	private void drawTextCentered (Graphics2D g, Font font, String text, int y)
 	{
 		g.setFont(font);
-		g.drawString(text, WorldPanel.W_MAP_PIXEL / 2 - g.getFontMetrics().stringWidth(text) / 2, WorldPanel.H_MAP_PIXEL / 2 + y);
+		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - (g.getFontMetrics().stringWidth(text) / 2), (WorldPanel.H_MAP_PIXEL / 2) + y);
 	}
 
 	private void drawEntity (Graphics2D g2d, Entity entity, double x, double y)
@@ -117,32 +117,29 @@ public class WorldPanel extends JPanel
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
 		{
-			//g2d.translate(1, 1);
-			this.starBackground.get(i).update();
+			this.starBackground.get(i).update(1);
 			this.starBackground.get(i).drawStar(g2d);
-			
-			//g2d.setTransform(identity);
 		}
 
 		if (! this.game.isGameOver())
 		{
-			g.setFont(this.largeFont);
-			g.setColor(Color.RED);
-			g.drawString("SCORE", 10, 25);
+			g2d.setFont(this.largeFont);
+			g2d.setColor(Color.RED);
+			g2d.drawString("SCORE", 10, 25);
 			
-			g.setFont(this.mediumFont);
-			g.setColor(Color.CYAN);
-			g.drawString(String.valueOf(this.game.getScore()), 10, 50);
+			g2d.setFont(this.mediumFont);
+			g2d.setColor(Color.CYAN);
+			g2d.drawString(String.valueOf(this.game.getScore()), 10, 50);
 			
 			g2d.setColor(WorldPanel.COLOR_DEFAULT);
 		}
-
+		
 		if (this.game.isGameOver())
 		{
-			g.setColor(Color.RED);
+			g2d.setColor(Color.RED);
 			this.drawTextCentered(g2d, this.massiveFont, "GAME OVER", -25);
 			
-			g.setColor(Color.CYAN);
+			g2d.setColor(Color.CYAN);
 			this.drawTextCentered(g2d, this.largeFont, "FINAL SCORE " + this.game.getScore(), 10);
 			
 			g2d.setColor(WorldPanel.COLOR_DEFAULT);
@@ -155,16 +152,10 @@ public class WorldPanel extends JPanel
 				if (this.game.isShowingLevel())
 					this.drawTextCentered(g2d, this.massiveFont, "LEVEL " + this.game.getLevel(), -25);
 		}
-
-		for (int i = 0; i < this.game.getLives(); i++)
-		{
-			g2d.setColor(Color.BLUE);
-			g2d.drawLine(W_MAP_PIXEL - 28, 30, W_MAP_PIXEL - 20, 10);
-			g2d.drawLine(W_MAP_PIXEL - 12, 30, W_MAP_PIXEL - 20, 10);
-			g2d.drawLine(W_MAP_PIXEL - 26, 26, W_MAP_PIXEL - 14, 26);
-			
-			g2d.translate(-20, 0);
-		}
+		
+		g2d.setFont(this.largeFont);
+		g2d.setColor(Color.BLUE);
+		g2d.drawString(this.game.getLives() + "UP", W_MAP_PIXEL - g.getFontMetrics().stringWidth("3 UP") - 10, 25);
 		
 		g2d.setColor(WorldPanel.COLOR_DEFAULT);
 	}
