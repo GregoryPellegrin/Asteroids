@@ -12,9 +12,16 @@ import java.awt.Graphics2D;
 
 public class Ennemi extends Ship
 {
-	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int killScore)
+	public final static int START_RIGHT = 300;
+	public final static int START_LEFT = -300;
+	public final static int START_UP = 600;
+	public final static int START_DOWN = 0;
+	
+	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int rotation, int killScore)
 	{
 		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, missileMax, fireRate, rechargeCooldown, killScore);
+	
+		super.rotate(rotation);
 	}
 
 	@Override

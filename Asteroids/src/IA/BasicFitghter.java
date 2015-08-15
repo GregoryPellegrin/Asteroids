@@ -20,9 +20,9 @@ public class BasicFitghter extends Ennemi
 	private static final int FIRE_RATE = 4;
 	private static final int RECHARGE_COOLDOWN = 30;
 	
-	public BasicFitghter ()
+	public BasicFitghter (int x, int y, int rotation)
 	{
-		super (new Vector (200, 200), new Vector (1, 0), Color.RED, Color.RED, BasicFitghter.SPEED_SHIP, BasicFitghter.SPEED_MISSILE, 10.0, BasicFitghter.MISSILE_MAX, BasicFitghter.FIRE_RATE, BasicFitghter.RECHARGE_COOLDOWN, 100);
+		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, BasicFitghter.SPEED_SHIP, BasicFitghter.SPEED_MISSILE, 10.0, BasicFitghter.MISSILE_MAX, BasicFitghter.FIRE_RATE, BasicFitghter.RECHARGE_COOLDOWN, rotation, 100);
 		
 		super.flamesMotorColor.add(Color.YELLOW);
 		super.flamesMotorColor.add(Color.RED);

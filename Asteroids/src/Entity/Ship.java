@@ -6,7 +6,6 @@
 package Entity;
 
 import Game.Game;
-import Game.WorldPanel;
 import Util.Vector;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -24,12 +23,12 @@ public class Ship extends Entity
 	private static final double SPEED_ROTATION_DEFAULT = -Math.PI / 2.0;
 	private static final int CONSECUTIVE_SHOTS_MAX = 8;
 	
+	private final List <Missile> missile;
 	private final Color MISSILE_COLOR;
 	private final int MISSILE_MAX;
 	private final int FIRE_RATE;
 	private final int RECHARGE_COOLDOWN;
 	
-	private List <Missile> missile;
 	private boolean movePressed;
 	private boolean rotationRightPressed;
 	private boolean rotationLeftPressed;
@@ -55,8 +54,8 @@ public class Ship extends Entity
 		this.missile = new ArrayList <> ();
 		this.rotation = Ship.SPEED_ROTATION_DEFAULT;
 		this.movePressed = false;
-		this.rotationLeftPressed = false;
 		this.rotationRightPressed = false;
+		this.rotationLeftPressed = false;
 		this.firePressed = false;
 		this.firingEnabled = true;
 		this.speedShip = speedShip;

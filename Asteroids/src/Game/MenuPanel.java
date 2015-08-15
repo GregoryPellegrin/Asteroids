@@ -5,9 +5,7 @@
 
 package Game;
 
-import Entity.Entity;
 import Entity.Star;
-import Util.Vector;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,11 +13,9 @@ import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import javax.swing.JPanel;
 
 public class MenuPanel extends JPanel
@@ -29,10 +25,11 @@ public class MenuPanel extends JPanel
 	private Font massiveFont;
 	private Font largeFont;
 	private Font mediumFont;
+	private Game game;
 
 	public MenuPanel (Game game)
 	{
-		//this.game = game;
+		this.game = game;
 
 		this.setPreferredSize(new Dimension (WorldPanel.W_MAP_PIXEL, WorldPanel.H_MAP_PIXEL));
 		this.setBackground(Color.BLACK);
@@ -71,7 +68,7 @@ public class MenuPanel extends JPanel
 		g.setFont(font);
 		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - (g.getFontMetrics().stringWidth(text) / 2), WorldPanel.H_MAP_PIXEL - 30);
 	}
-
+	
 	@Override
 	public void paintComponent (Graphics g)
 	{
@@ -83,7 +80,7 @@ public class MenuPanel extends JPanel
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
 		{
-			this.starBackground.get(i).update(1);
+			this.starBackground.get(i).update(this.game.getStarSpeed());
 			this.starBackground.get(i).drawStar(g2d);
 		}
 
@@ -91,12 +88,18 @@ public class MenuPanel extends JPanel
 		this.drawGameTitle(g2d, this.massiveFont, "ASTEROIDS", 80);
 		
 		g.setColor(Color.YELLOW);
+		if (game.getGameMode() == 0)
+			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, WorldPanel.H_MAP_PIXEL / 2, 10, 10);
 		this.drawGameMode(g2d, this.largeFont, "1 PLAYER", 60, WorldPanel.H_MAP_PIXEL / 2);
 		
 		g.setColor(Color.YELLOW);
+		if (game.getGameMode() == 1)
+			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, (WorldPanel.H_MAP_PIXEL / 2) + 30, 10, 10);
 		this.drawGameMode(g2d, this.largeFont, "2 PLAYERS", 60, (WorldPanel.H_MAP_PIXEL / 2) + 30);
 		
 		g.setColor(Color.YELLOW);
+		if (game.getGameMode() == 2)
+			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, (WorldPanel.H_MAP_PIXEL / 2) + 60, 10, 10);
 		this.drawGameMode(g2d, this.largeFont, "VERSUS MODE", 60, (WorldPanel.H_MAP_PIXEL / 2) + 60);
 		
 		g.setColor(Color.WHITE);

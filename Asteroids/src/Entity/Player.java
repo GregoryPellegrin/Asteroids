@@ -55,7 +55,7 @@ public class Player extends Ship
 	{
 		super.reset();
 		
-		super.position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL / 2.0);
+		super.position.set(WorldPanel.W_MAP_PIXEL / 2.0, WorldPanel.H_MAP_PIXEL - 50);
 		super.speed.set(0.0, 0.0);
 	}
 

@@ -49,6 +49,7 @@ public class Game extends JFrame
 	private int score;
 	private int lives;
 	private int level;
+	private int starSpeed;
 
 	private Game ()
 	{
@@ -73,6 +74,10 @@ public class Game extends JFrame
 						break;
 
 					case KeyEvent.VK_SPACE:
+						gameModeIsChoose();
+						break;
+
+					case KeyEvent.VK_ENTER:
 						gameModeIsChoose();
 						break;
 				}
@@ -175,6 +180,11 @@ public class Game extends JFrame
 	{
 		return this.isGameOver;
 	}
+	
+	public int getGameMode ()
+	{
+		return this.gameMode;
+	}
 
 	public int getScore ()
 	{
@@ -189,6 +199,11 @@ public class Game extends JFrame
 	public int getLevel ()
 	{
 		return this.level;
+	}
+	
+	public int getStarSpeed ()
+	{
+		return this.starSpeed;
 	}
 
 	public boolean isPaused ()
@@ -228,23 +243,6 @@ public class Game extends JFrame
 			this.restartGame = true;
 		
 		return restart;
-	}
-	
-	public void changeGameModeUp ()
-	{
-		if (this.gameMode > 0)
-			this.gameMode--;
-	}
-	
-	public void changeGameModeDown ()
-	{
-		if (this.gameMode < (Game.GAME_MODE_MAX - 1))
-			this.gameMode++;
-	}
-	
-	public void gameModeIsChoose ()
-	{
-		this.isGameModeChoose = true;
 	}
 
 	public void addScore (int score)
@@ -286,11 +284,28 @@ public class Game extends JFrame
 		this.removeKeyListener(this.soloModeListener);
 	}
 	
+	private void changeGameModeUp ()
+	{
+		if (this.gameMode > 0)
+			this.gameMode--;
+	}
+	
+	private void changeGameModeDown ()
+	{
+		if (this.gameMode < (Game.GAME_MODE_MAX - 1))
+			this.gameMode++;
+	}
+	
+	private void gameModeIsChoose ()
+	{
+		this.isGameModeChoose = true;
+	}
+	
 	private void resetMenu ()
 	{
-		
 		this.isGameModeChoose = false;
 		this.gameMode = 0;
+		this.starSpeed = 1;
 		
 		this.resetEntityLists();
 		this.removeKeyListener();
@@ -310,6 +325,7 @@ public class Game extends JFrame
 		this.deathCooldown = 0;
 		this.isGameOver = false;
 		this.restartGame = false;
+		this.starSpeed = 1;
 		
 		this.resetEntityLists();
 		this.removeKeyListener();
@@ -363,7 +379,7 @@ public class Game extends JFrame
 
 		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
 		
-		while (! this.isGameOver && ! this.restartGame)
+		while (! this.isGameOver || ! this.restartGame)
 		{
 			long start = System.nanoTime();
 			
@@ -411,21 +427,21 @@ public class Game extends JFrame
 			this.player.reset();
 			this.player.setFiringEnabled(true);
 			
-			/*
-			 * ENNEMIS
-			 * 
-			 * if (level < 3
-			 * new Chasseur (position)
-			 * starSpeed++
-			 * 
-			 * if (level > 3
-			 * new Chasseur (position)
-			 * new Elite (position)
-			 * 
-			 * if (level = 5
-			 * new Boss (position)
-			 */
-			this.registerEntity(new BasicFitghter ());
+			if (this.getLevel() <= 2)
+			{
+				this.starSpeed = 1;
+				
+				for (int i = 0; i < 4 * this.getLevel(); i++)
+					this.registerEntity(new BasicFitghter (50 + i * 50, 100, Ennemi.START_UP));
+			}
+			
+			if (this.getLevel() == 3)
+			{
+				this.starSpeed = 2;
+				
+				for (int i = 0; i < 4 * this.getLevel(); i++)
+					this.registerEntity(new BasicFitghter (50 + i * 50, 100, Ennemi.START_RIGHT));
+			}
 		}
 		
 		if (this.deathCooldown > 0)

@@ -27,7 +27,7 @@ public class WorldPanel extends JPanel
 	public static final Color COLOR_DEFAULT = Color.WHITE;
 	public static final int W_MAP_PIXEL = 900;
 	public static final int H_MAP_PIXEL = 500;
-	public static final int STAR_BACKGROUND_MAX = 50;
+	public static final int STAR_BACKGROUND_MAX = 60;
 	
 	private final ArrayList <Star> starBackground = new ArrayList <> ();
 	private final Game game;
@@ -117,7 +117,7 @@ public class WorldPanel extends JPanel
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
 		{
-			this.starBackground.get(i).update(1);
+			this.starBackground.get(i).update(this.game.getStarSpeed());
 			this.starBackground.get(i).drawStar(g2d);
 		}
 

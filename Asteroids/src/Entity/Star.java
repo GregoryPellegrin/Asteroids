@@ -49,7 +49,10 @@ public class Star
 	
 	public void update (int starSpeed)
 	{
-		if ((int) (Math.random() * 50) == 0)
+		if ((int) (Math.random() * 100) == 0)
+			this.reCreate();
+		
+		if (this.y >= WorldPanel.H_MAP_PIXEL)
 			this.reCreate();
 		
 		this.y = this.y + starSpeed;
