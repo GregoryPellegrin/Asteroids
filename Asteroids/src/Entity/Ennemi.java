@@ -17,11 +17,11 @@ public class Ennemi extends Ship
 	public final static int START_UP = 600;
 	public final static int START_DOWN = 0;
 	
-	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int rotation, int killScore)
+	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int startingPosition, int killScore)
 	{
 		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, missileMax, fireRate, rechargeCooldown, killScore);
 	
-		super.rotate(rotation);
+		super.rotate(startingPosition);
 	}
 
 	@Override

@@ -8,7 +8,8 @@ package Game;
 import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
-import IA.BasicFitghter;
+import IA.BasicFighter;
+import IA.SpeedFighter;
 import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -72,7 +73,7 @@ public class Game extends JFrame
 					case KeyEvent.VK_DOWN:
 						changeGameModeDown();
 						break;
-
+						
 					case KeyEvent.VK_SPACE:
 						gameModeIsChoose();
 						break;
@@ -432,7 +433,10 @@ public class Game extends JFrame
 				this.starSpeed = 1;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicFitghter (50 + i * 50, 100, Ennemi.START_UP));
+					this.registerEntity(new BasicFighter (50 + i * 50, 100, Ennemi.START_LEFT));
+				
+				for (int i = 0; i < 1 * this.getLevel(); i++)
+					this.registerEntity(new SpeedFighter (50 + i * 50, 300, Ennemi.START_LEFT));
 			}
 			
 			if (this.getLevel() == 3)
@@ -440,7 +444,7 @@ public class Game extends JFrame
 				this.starSpeed = 2;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicFitghter (50 + i * 50, 100, Ennemi.START_RIGHT));
+					this.registerEntity(new BasicFighter (50 + i * 50, 100, Ennemi.START_LEFT));
 			}
 		}
 		
