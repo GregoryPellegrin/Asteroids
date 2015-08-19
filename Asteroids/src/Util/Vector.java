@@ -51,7 +51,7 @@ public class Vector
 		
 		return this;
 	}
-
+	
 	public Vector normalize ()
 	{
 		double length = this.getLengthSquared();
@@ -77,6 +77,6 @@ public class Vector
 		double dx = this.x - vec.x;
 		double dy = this.y - vec.y;
 		
-		return (dx * dx + dy * dy);
+		return ((dx * dx) + (dy * dy));
 	}
 }

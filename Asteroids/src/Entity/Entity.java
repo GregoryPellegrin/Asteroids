@@ -68,7 +68,7 @@ public abstract class Entity
 		this.rotation = this.rotation + amount;
 		this.rotation %= Math.PI * 2;
 	}
-
+	
 	public void update (Game game)
 	{
 		this.position.add(this.speed);

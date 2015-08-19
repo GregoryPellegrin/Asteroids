@@ -45,7 +45,7 @@ public class Missile extends Entity
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		g.setColor(super.color);
+		g.setColor(super.color);	
 		g.drawOval(-1, -1, 2, 2);
 		
 		g.setColor(WorldPanel.COLOR_DEFAULT);

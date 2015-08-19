@@ -3,7 +3,7 @@
  * pellegrin.gregory.work@gmail.com
  */
 
-package IA;
+package Ennemi;
 
 import Entity.Ennemi;
 import Game.Game;
@@ -12,17 +12,18 @@ import Util.Vector;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public class BasicBoss extends Ennemi
+public class BasicShip extends Ennemi
 {
 	private static final double SPEED_SHIP = 0.0285;
 	private static final double SPEED_MISSILE = 6.75;
 	private static final int MISSILE_MAX = 4;
 	private static final int FIRE_RATE = 4;
 	private static final int RECHARGE_COOLDOWN = 30;
+	private static final int LIFE = 1;
 	
-	public BasicBoss (int x, int y, int startingPosition)
+	public BasicShip (int x, int y, int startingPosition)
 	{
-		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, BasicBoss.SPEED_SHIP, BasicBoss.SPEED_MISSILE, 10.0, BasicBoss.MISSILE_MAX, BasicBoss.FIRE_RATE, BasicBoss.RECHARGE_COOLDOWN, startingPosition, 100);
+		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, BasicShip.SPEED_SHIP, BasicShip.SPEED_MISSILE, 10.0, BasicShip.MISSILE_MAX, BasicShip.FIRE_RATE, BasicShip.RECHARGE_COOLDOWN, startingPosition, LIFE, 100);
 		
 		super.flamesMotorColor.add(Color.YELLOW);
 		super.flamesMotorColor.add(Color.RED);

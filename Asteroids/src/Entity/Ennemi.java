@@ -17,11 +17,25 @@ public class Ennemi extends Ship
 	public final static int START_UP = 600;
 	public final static int START_DOWN = 0;
 	
-	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int startingPosition, int killScore)
+	public int life;
+	
+	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int startingPosition, int life, int killScore)
 	{
 		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, missileMax, fireRate, rechargeCooldown, killScore);
 	
 		super.rotate(startingPosition);
+		
+		this.life = life;
+	}
+	
+	@Override
+	public void flagForRemoval ()
+	{
+		if (this.life > 0)
+			this.life--;
+		
+		if (this.life == 0)
+			super.flagForRemoval();
 	}
 
 	@Override
@@ -29,7 +43,7 @@ public class Ennemi extends Ship
 	{
 		if (other.getClass() == Missile.class)
 		{
-			super.flagForRemoval();
+			this.flagForRemoval();
 
 			game.addScore(super.getKillScore());
 		}

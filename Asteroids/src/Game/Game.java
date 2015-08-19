@@ -8,8 +8,9 @@ package Game;
 import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
-import IA.BasicFighter;
-import IA.SpeedFighter;
+import Ennemi.MotherShip;
+import Ennemi.BasicShip;
+import Ennemi.SpeedShip;
 import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -121,6 +122,9 @@ public class Game extends JFrame
 						if (! checkForRestart())
 							logicTimer.setPaused(! logicTimer.isPaused());
 						break;
+					
+					case KeyEvent.VK_ESCAPE:
+						restart();
 
 					default:
 						checkForRestart();
@@ -244,6 +248,12 @@ public class Game extends JFrame
 			this.restartGame = true;
 		
 		return restart;
+	}
+	
+	private void restart ()
+	{
+		this.restartGame = true;
+		this.isGameOver = true;
 	}
 
 	public void addScore (int score)
@@ -422,7 +432,7 @@ public class Game extends JFrame
 		{
 			this.level++;
 			this.showLevelCooldown = Game.DISPLAY_LEVEL_LIMIT;
-
+			
 			this.resetEntityLists();
 
 			this.player.reset();
@@ -433,10 +443,13 @@ public class Game extends JFrame
 				this.starSpeed = 1;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicFighter (50 + i * 50, 100, Ennemi.START_LEFT));
+					this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
+				
+				for (int i = 0; i < 2 * this.getLevel(); i++)
+					this.registerEntity(new SpeedShip (50 + i * 50, 300, Ennemi.START_LEFT));
 				
 				for (int i = 0; i < 1 * this.getLevel(); i++)
-					this.registerEntity(new SpeedFighter (50 + i * 50, 300, Ennemi.START_LEFT));
+					this.registerEntity(new MotherShip (50 + i * 50, 400, Ennemi.START_LEFT));
 			}
 			
 			if (this.getLevel() == 3)
@@ -444,7 +457,7 @@ public class Game extends JFrame
 				this.starSpeed = 2;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicFighter (50 + i * 50, 100, Ennemi.START_LEFT));
+					this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
 			}
 		}
 		
