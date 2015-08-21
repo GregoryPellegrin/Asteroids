@@ -54,47 +54,6 @@ public class MotherShip extends Ennemi
 		g.drawLine(-6, -4, -3, -4);
 		g.drawLine(-3, -4, -3, 4);
 		g.drawLine(-3, 4, -6, 4);
-		/*g.drawLine(40, -6, 16, -16);
-		g.drawLine(16, -16, -2, -16);
-		g.drawLine(-2, -16, -8, -10);
-		g.drawLine(-8, -10, -8, 10);
-		g.drawLine(-8, 10, -2, 16);
-		g.drawLine(-2, 16, 16, 16);
-		g.drawLine(16, 16, 40, 6);
-		g.drawLine(40, 6, 16, 12);
-		g.drawLine(16, 12, -2, 12);
-		g.drawLine(-2, 12, -4, 10);
-		g.drawLine(-4, 10, -4, -10);
-		g.drawLine(-4, -10, -2, -12);
-		g.drawLine(-2, -12, 16, -12);
-		g.drawLine(16, -12, 40, -6);
-		g.drawLine(-8, -8, -10, -8);
-		g.drawLine(-10, -8, -10, 8);
-		g.drawLine(-10, 8, -8, 8);
-		g.drawLine(-4, -2, -2, -2);
-		g.drawLine(-2, -2, -2, 2);
-		g.drawLine(-4, 2, -4, 2);*/
-		
-		/*g.drawLine(80, -12, 32, -32);
-		g.drawLine(32, -32, -4, -32);
-		g.drawLine(-4, -32, -16, -20);
-		g.drawLine(-16, -20, -16, 20);
-		g.drawLine(-16, 20, -4, 32);
-		g.drawLine(-4, 32, 32, 32);
-		g.drawLine(32, 32, 80, 12);
-		g.drawLine(80, 12, 32, 24);
-		g.drawLine(32, 24, -4, 24);
-		g.drawLine(-4, 24, -8, 20);
-		g.drawLine(-8, 20, -8, -20);
-		g.drawLine(-8, -20, -4, -24);
-		g.drawLine(-4, -24, 32, -24);
-		g.drawLine(32, -24, 80, -12);
-		g.drawLine(-16, -16, -20, -16);
-		g.drawLine(-20, -16, -20, 16);
-		g.drawLine(-20, 16, -16, 16);
-		g.drawLine(-8, -4, -4, -4);
-		g.drawLine(-4, -4, -4, 4);
-		g.drawLine(-4, 4, -8, 4);*/
 
 		g.setColor(WorldPanel.COLOR_DEFAULT);
 
