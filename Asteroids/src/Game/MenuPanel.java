@@ -103,7 +103,7 @@ public class MenuPanel extends JPanel
 		this.drawCenter(g2d, this.largeFont, "VERSUS MODE", (WorldPanel.H_MAP_PIXEL / 2) + 60);
 		
 		g.setColor(Color.WHITE);
-		this.drawCenter(g2d, this.mediumFont, "CREATED BY MASTER OF SEX");
+		this.drawCenter(g2d, this.mediumFont, "CREATED BY SUSHI");
 		
 		g2d.setColor(WorldPanel.COLOR_DEFAULT);
 	}
