@@ -52,7 +52,7 @@ public abstract class Entity
 	{
 		return this.collisionRadius;
 	}
-
+	
 	public int getKillScore ()
 	{
 		return this.killScore;

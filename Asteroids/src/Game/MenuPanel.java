@@ -57,16 +57,16 @@ public class MenuPanel extends JPanel
 		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - (g.getFontMetrics().stringWidth(text) / 2), y);
 	}
 
-	private void drawGameMode (Graphics2D g, Font font, String text, int x, int y)
-	{
-		g.setFont(font);
-		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - x, y);
-	}
-
-	private void drawGameCreator (Graphics2D g, Font font, String text)
+	private void drawCenter (Graphics2D g, Font font, String text)
 	{
 		g.setFont(font);
 		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - (g.getFontMetrics().stringWidth(text) / 2), WorldPanel.H_MAP_PIXEL - 30);
+	}
+
+	private void drawCenter (Graphics2D g, Font font, String text, int y)
+	{
+		g.setFont(font);
+		g.drawString(text, (WorldPanel.W_MAP_PIXEL / 2) - (g.getFontMetrics().stringWidth(text) / 2), y);
 	}
 	
 	@Override
@@ -89,21 +89,21 @@ public class MenuPanel extends JPanel
 		
 		g.setColor(Color.YELLOW);
 		if (game.getGameMode() == 0)
-			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, WorldPanel.H_MAP_PIXEL / 2, 10, 10);
-		this.drawGameMode(g2d, this.largeFont, "1 PLAYER", 60, WorldPanel.H_MAP_PIXEL / 2);
+			g.setColor(Color.WHITE);
+		this.drawCenter(g2d, this.largeFont, "1 PLAYER", WorldPanel.H_MAP_PIXEL / 2);
 		
 		g.setColor(Color.YELLOW);
 		if (game.getGameMode() == 1)
-			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, (WorldPanel.H_MAP_PIXEL / 2) + 30, 10, 10);
-		this.drawGameMode(g2d, this.largeFont, "2 PLAYERS", 60, (WorldPanel.H_MAP_PIXEL / 2) + 30);
+			g.setColor(Color.WHITE);
+		this.drawCenter(g2d, this.largeFont, "2 PLAYERS", (WorldPanel.H_MAP_PIXEL / 2) + 30);
 		
 		g.setColor(Color.YELLOW);
 		if (game.getGameMode() == 2)
-			g.fillOval((WorldPanel.W_MAP_PIXEL / 2) - 80, (WorldPanel.H_MAP_PIXEL / 2) + 60, 10, 10);
-		this.drawGameMode(g2d, this.largeFont, "VERSUS MODE", 60, (WorldPanel.H_MAP_PIXEL / 2) + 60);
+			g.setColor(Color.WHITE);
+		this.drawCenter(g2d, this.largeFont, "VERSUS MODE", (WorldPanel.H_MAP_PIXEL / 2) + 60);
 		
 		g.setColor(Color.WHITE);
-		this.drawGameCreator(g2d, this.mediumFont, "CREATED BY MASTER OF SEX");
+		this.drawCenter(g2d, this.mediumFont, "CREATED BY MASTER OF SEX");
 		
 		g2d.setColor(WorldPanel.COLOR_DEFAULT);
 	}
