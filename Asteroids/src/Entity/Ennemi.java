@@ -19,34 +19,33 @@ public class Ennemi extends Ship
 	
 	public int life;
 	
-	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, int missileMax, int fireRate, int rechargeCooldown, int startingPosition, int life, int killScore)
+	public Ennemi (Vector position, Vector shipVelocity, Color shipColor, Color missileColor, double shipSpeed, double missileSpeed, double radius, double rotationSpeed, int missileMax, int fireRate, int rechargeCooldown, int startingPosition, int life, int killScore)
 	{
-		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, missileMax, fireRate, rechargeCooldown, killScore);
+		super (position, shipVelocity, shipColor, missileColor, shipSpeed, missileSpeed, radius, rotationSpeed, missileMax, fireRate, rechargeCooldown, killScore);
 	
 		super.rotate(startingPosition);
 		
 		this.life = life;
 	}
 	
-	@Override
-	public void flagForRemoval ()
+	public void flagForRemoval (Game game)
 	{
 		if (this.life > 0)
 			this.life--;
 		
 		if (this.life == 0)
+		{
 			super.flagForRemoval();
+			
+			game.addScore(super.getKillScore());
+		}
 	}
 
 	@Override
 	public void checkCollision (Game game, Entity other)
 	{
 		if (other.getClass() == Missile.class)
-		{
-			this.flagForRemoval();
-
-			game.addScore(super.getKillScore());
-		}
+			this.flagForRemoval(game);
 	}
 
 	@Override

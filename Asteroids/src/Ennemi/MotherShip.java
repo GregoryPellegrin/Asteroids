@@ -14,16 +14,17 @@ import java.awt.Graphics2D;
 
 public class MotherShip extends Ennemi
 {
-	private static final double SPEED_SHIP = 0.0285;
-	private static final double SPEED_MISSILE = 6.75;
-	private static final int MISSILE_MAX = 4;
+	private static final double SPEED_SHIP = 0.0175;
+	private static final double SPEED_MISSILE = 4.75;
+	private static final double SPEED_ROTATION = 0.030;
+	private static final int MISSILE_MAX = 7;
 	private static final int FIRE_RATE = 4;
-	private static final int RECHARGE_COOLDOWN = 30;
-	private static final int LIFE = 3;
+	private static final int RECHARGE_COOLDOWN = 20;
+	private static final int LIFE = 5;
 	
 	public MotherShip (int x, int y, int startingPosition)
 	{
-		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, MotherShip.SPEED_SHIP, MotherShip.SPEED_MISSILE, 10.0, MotherShip.MISSILE_MAX, MotherShip.FIRE_RATE, MotherShip.RECHARGE_COOLDOWN, startingPosition, LIFE, 100);
+		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, MotherShip.SPEED_SHIP, MotherShip.SPEED_MISSILE, 10.0, MotherShip.SPEED_ROTATION, MotherShip.MISSILE_MAX, MotherShip.FIRE_RATE, MotherShip.RECHARGE_COOLDOWN, startingPosition, LIFE, 500);
 		
 		super.flamesMotorColor.add(Color.YELLOW);
 		super.flamesMotorColor.add(Color.RED);
@@ -60,14 +61,12 @@ public class MotherShip extends Ennemi
 		if (! game.isPaused() && super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
 		{
 			g.setColor(super.flamesMotorColor.get(0));
-			g.drawLine(-6, -6, -14, 0);
-			g.drawLine(-6, 6, -14, 0);
+			g.drawLine(-17, -12, -20, 0);
+			g.drawLine(-17, 12, -20, 0);
 
 			g.setColor(super.flamesMotorColor.get(1));
-			g.fillOval(-14, -2, 7, 4);
-
-			g.setColor(super.flamesMotorColor.get(1));
-			g.fillOval(-14, -1, 7, 4);
+			g.drawLine(-18, -12, -21, 0);
+			g.drawLine(-18, 12, -21, 0);
 
 			g.setColor(WorldPanel.COLOR_DEFAULT);
 		}

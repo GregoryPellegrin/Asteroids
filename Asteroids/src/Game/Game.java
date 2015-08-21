@@ -11,6 +11,8 @@ import Entity.Player;
 import Ennemi.MotherShip;
 import Ennemi.BasicShip;
 import Ennemi.SpeedShip;
+import Ennemi.SuperMotherShip;
+import Ennemi.SuperSpeedShip;
 import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -446,10 +448,16 @@ public class Game extends JFrame
 					this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
 				
 				for (int i = 0; i < 2 * this.getLevel(); i++)
-					this.registerEntity(new SpeedShip (50 + i * 50, 300, Ennemi.START_LEFT));
+					this.registerEntity(new SpeedShip (50 + i * 50, 200, Ennemi.START_LEFT));
+				
+				for (int i = 0; i < 2 * this.getLevel(); i++)
+					this.registerEntity(new SuperSpeedShip (50 + i * 50, 300, Ennemi.START_LEFT));
 				
 				for (int i = 0; i < 1 * this.getLevel(); i++)
 					this.registerEntity(new MotherShip (50 + i * 50, 400, Ennemi.START_LEFT));
+				
+				for (int i = 0; i < 1 * this.getLevel(); i++)
+					this.registerEntity(new SuperMotherShip (300 + i * 50, 200, Ennemi.START_LEFT));
 			}
 			
 			if (this.getLevel() == 3)

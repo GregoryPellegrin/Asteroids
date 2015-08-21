@@ -16,6 +16,7 @@ public class BasicShip extends Ennemi
 {
 	private static final double SPEED_SHIP = 0.0285;
 	private static final double SPEED_MISSILE = 6.75;
+	private static final double SPEED_ROTATION = 1;
 	private static final int MISSILE_MAX = 4;
 	private static final int FIRE_RATE = 4;
 	private static final int RECHARGE_COOLDOWN = 30;
@@ -23,7 +24,7 @@ public class BasicShip extends Ennemi
 	
 	public BasicShip (int x, int y, int startingPosition)
 	{
-		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, BasicShip.SPEED_SHIP, BasicShip.SPEED_MISSILE, 10.0, BasicShip.MISSILE_MAX, BasicShip.FIRE_RATE, BasicShip.RECHARGE_COOLDOWN, startingPosition, LIFE, 100);
+		super (new Vector (x, y), new Vector (1, 0), Color.RED, Color.RED, BasicShip.SPEED_SHIP, BasicShip.SPEED_MISSILE, 10.0, BasicShip.SPEED_ROTATION, BasicShip.MISSILE_MAX, BasicShip.FIRE_RATE, BasicShip.RECHARGE_COOLDOWN, startingPosition, LIFE, 100);
 		
 		super.flamesMotorColor.add(Color.YELLOW);
 		super.flamesMotorColor.add(Color.RED);

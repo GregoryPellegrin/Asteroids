@@ -19,12 +19,12 @@ public class Ship extends Entity
 	
 	private static final double SPEED_SHIP_MAX = 6.5;
 	private static final double SPEED_STOP = 0.995;
-	private static final double SPEED_ROTATION = 0.052;
 	private static final double SPEED_ROTATION_DEFAULT = -Math.PI / 2.0;
 	private static final int CONSECUTIVE_SHOTS_MAX = 8;
 	
 	private final List <Missile> missile;
 	private final Color MISSILE_COLOR;
+	private final double SPEED_ROTATION;
 	private final int MISSILE_MAX;
 	private final int FIRE_RATE;
 	private final int RECHARGE_COOLDOWN;
@@ -41,7 +41,7 @@ public class Ship extends Entity
 	private int overheatCooldown;
 	private int animationFrame;
 
-	public Ship (Vector position, Vector velocity, Color shipColor, Color missileColor, double speedShip, double speedMissile, double radius, int missileMax, int fireRate, int rechargeCooldown, int killScore)
+	public Ship (Vector position, Vector velocity, Color shipColor, Color missileColor, double speedShip, double speedMissile, double radius, double speedRotation, int missileMax, int fireRate, int rechargeCooldown, int killScore)
 	{
 		super(position, velocity, shipColor, radius, killScore);
 		
@@ -53,6 +53,7 @@ public class Ship extends Entity
 		this.flamesMotorColor = new ArrayList <> ();
 		this.missile = new ArrayList <> ();
 		this.rotation = Ship.SPEED_ROTATION_DEFAULT;
+		this.SPEED_ROTATION = speedRotation;
 		this.movePressed = false;
 		this.rotationRightPressed = false;
 		this.rotationLeftPressed = false;
@@ -124,7 +125,7 @@ public class Ship extends Entity
 		this.animationFrame++;
 		
 		if (this.rotationLeftPressed != this.rotationRightPressed)
-			super.rotate(this.rotationLeftPressed ? - Ship.SPEED_ROTATION : Ship.SPEED_ROTATION);
+			super.rotate(this.rotationLeftPressed ? - this.SPEED_ROTATION : this.SPEED_ROTATION);
 		
 		if (this.movePressed)
 		{
