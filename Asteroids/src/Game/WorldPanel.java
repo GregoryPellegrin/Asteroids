@@ -50,9 +50,9 @@ public class WorldPanel extends JPanel
 		{
 			Font arcadeFont = Font.createFont(Font.TRUETYPE_FONT, new File ("ressources/arcadeClassic.ttf"));
 			
-			massiveFont = arcadeFont.deriveFont(Font.PLAIN, 40);
-			largeFont = arcadeFont.deriveFont(Font.PLAIN, 30);
-			mediumFont = arcadeFont.deriveFont(Font.PLAIN, 25);
+			this.massiveFont = arcadeFont.deriveFont(Font.PLAIN, 40);
+			this.largeFont = arcadeFont.deriveFont(Font.PLAIN, 30);
+			this.mediumFont = arcadeFont.deriveFont(Font.PLAIN, 25);
 		}
 		catch (FontFormatException | IOException e)
 		{
@@ -89,38 +89,42 @@ public class WorldPanel extends JPanel
 		
 		AffineTransform identity = g2d.getTransform();
 
-		Iterator <Entity> iter = this.game.getEntities().iterator();
-		while (iter.hasNext())
+		if (! this.game.isShowingLevel())
 		{
-			Entity entity = iter.next();
-			
-			if ((entity != this.game.getPlayer()) || this.game.canDrawPlayer())
+			Iterator <Entity> iter = this.game.getEntities().iterator();
+			while (iter.hasNext())
 			{
-				Vector pos = entity.getPosition();
+				Entity entity = iter.next();
 
-				this.drawEntity(g2d, entity, pos.x, pos.y);
-				g2d.setTransform(identity);
-
-				double radius = entity.getCollisionRadius();
-				double x = (pos.x < radius) ? pos.x + WorldPanel.W_MAP_PIXEL
-						: (pos.x > WorldPanel.W_MAP_PIXEL - radius) ? pos.x - WorldPanel.W_MAP_PIXEL : pos.x;
-				double y = (pos.y < radius) ? pos.y + WorldPanel.H_MAP_PIXEL
-						: (pos.y > WorldPanel.H_MAP_PIXEL - radius) ? pos.y - WorldPanel.H_MAP_PIXEL : pos.y;
-
-				if ((x != pos.x) || (y != pos.y))
+				if ((entity != this.game.getPlayer()) || this.game.canDrawPlayer())
 				{
-					this.drawEntity(g2d, entity, x, y);
+					Vector pos = entity.getPosition();
+
+					this.drawEntity(g2d, entity, pos.x, pos.y);
 					g2d.setTransform(identity);
+
+					double radius = entity.getCollisionRadius();
+					double x = (pos.x < radius) ? pos.x + WorldPanel.W_MAP_PIXEL
+							: (pos.x > WorldPanel.W_MAP_PIXEL - radius) ? pos.x - WorldPanel.W_MAP_PIXEL : pos.x;
+					double y = (pos.y < radius) ? pos.y + WorldPanel.H_MAP_PIXEL
+							: (pos.y > WorldPanel.H_MAP_PIXEL - radius) ? pos.y - WorldPanel.H_MAP_PIXEL : pos.y;
+
+					if ((x != pos.x) || (y != pos.y))
+					{
+						this.drawEntity(g2d, entity, x, y);
+						g2d.setTransform(identity);
+					}
 				}
 			}
 		}
 		
-		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
+		if (this.game.isShowingLevel())
 		{
-			this.starBackground.get(i).update(this.game.getStarSpeed());
-			this.starBackground.get(i).drawStar(g2d);
+			g2d.setColor(this.game.story.getColor(0));
+			for (int i = 0; i < this.game.story.getSize(0); i++)
+				this.drawTextCentered(g2d, this.game.story.getFont(0, i), this.game.story.getText(0, i), this.game.story.getYPosition(0, i));
 		}
-
+		
 		if (! this.game.isGameOver())
 		{
 			g2d.setFont(this.largeFont);
@@ -148,9 +152,14 @@ public class WorldPanel extends JPanel
 		{
 			if (this.game.isPaused())
 				this.drawTextCentered(g2d, this.massiveFont, "PAUSED", -25);
-			else
-				if (this.game.isShowingLevel())
+			else if (this.game.isShowingLevel())
 					this.drawTextCentered(g2d, this.massiveFont, "LEVEL " + this.game.getLevel(), -25);
+		}
+		
+		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
+		{
+			this.starBackground.get(i).update(this.game.getStarSpeed());
+			this.starBackground.get(i).drawStar(g2d);
 		}
 		
 		g2d.setFont(this.largeFont);

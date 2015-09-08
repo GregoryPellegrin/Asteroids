@@ -13,6 +13,7 @@ import Ennemi.BasicShip;
 import Ennemi.SpeedShip;
 import Ennemi.SuperMotherShip;
 import Ennemi.SuperSpeedShip;
+import Entity.Story;
 import Util.Clock;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -25,6 +26,8 @@ import javax.swing.JFrame;
 
 public class Game extends JFrame
 {
+	public Story story;
+	
 	private static final int GAME_MODE_MAX = 3;
 	private static final int FRAMES_PER_SECOND = 60;
 	private static final long FRAME_TIME = (long) (1000000000.0 / FRAMES_PER_SECOND);
@@ -161,6 +164,8 @@ public class Game extends JFrame
 				}
 			}
 		};
+		
+		this.story = new Story ();
 		
 		this.setLayout(new BorderLayout ());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -364,8 +369,6 @@ public class Game extends JFrame
 			long start = System.nanoTime();
 			
 			this.logicTimer.update();
-			for (int i = 0; i < 5 && this.logicTimer.hasElapsedCycle(); i++)
-				this.updateMenu();
 
 			this.menu.repaint();
 
@@ -415,10 +418,6 @@ public class Game extends JFrame
 		}
 	}
 	
-	private void updateMenu ()
-	{
-	}
-	
 	private void updateGame ()
 	{
 		this.entities.addAll(this.pendingEntities);
@@ -442,6 +441,7 @@ public class Game extends JFrame
 			
 			if (this.getLevel() <= 2)
 			{
+				this.showLevelCooldown = this.story.getShowLevelCooldown(0);
 				this.starSpeed = 1;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
@@ -462,6 +462,7 @@ public class Game extends JFrame
 			
 			if (this.getLevel() == 3)
 			{
+				this.showLevelCooldown = 30;
 				this.starSpeed = 2;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
