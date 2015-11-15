@@ -21,7 +21,6 @@ public class Story
 	private final ArrayList <ArrayList<String>> text = new ArrayList <> ();
 	private final ArrayList <ArrayList<Integer>> yPosition = new ArrayList <> ();
 	private final ArrayList <Color> color = new ArrayList <> ();
-	private final ArrayList <Integer> showLevelCooldown = new ArrayList <> ();
 	
 	private Font massiveFont;
 	private Font largeFont;
@@ -71,8 +70,6 @@ public class Story
 		this.yPosition.get(0).add(190);
 		
 		this.color.add(Color.RED);
-		
-		this.showLevelCooldown.add(1500);
 	}
 	
 	public Font getFont (int i, int j)
@@ -98,10 +95,5 @@ public class Story
 	public Color getColor (int i)
 	{
 		return this.color.get(i);
-	}
-	
-	public int getShowLevelCooldown (int i)
-	{
-		return this.showLevelCooldown.get(i);
 	}
 }

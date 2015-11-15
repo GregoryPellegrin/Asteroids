@@ -48,10 +48,10 @@ public class Game extends JFrame
 	private Player player;
 	private boolean isGameModeChoose;
 	private boolean isGameOver;
+	private boolean isShowingLevel;
 	private boolean restartGame;
 	private int gameMode;
 	private int deathCooldown;
-	private int showLevelCooldown;
 	private int restartCooldown;
 	private int score;
 	private int lives;
@@ -121,6 +121,13 @@ public class Game extends JFrame
 					case KeyEvent.VK_SPACE:
 						if (! checkForRestart())
 							player.setFiring(true);
+						
+						if (isShowingLevel)
+							isShowingLevel = false;
+						break;
+
+					case KeyEvent.VK_ENTER:
+						isShowingLevel = false;
 						break;
 
 					case KeyEvent.VK_P:
@@ -235,7 +242,7 @@ public class Game extends JFrame
 	
 	public boolean isShowingLevel ()
 	{
-		return (this.showLevelCooldown > 0);
+		return this.isShowingLevel;
 	}
 	
 	private boolean areEnemiesDead ()
@@ -426,13 +433,10 @@ public class Game extends JFrame
 		if (this.restartCooldown > 0)
 			this.restartCooldown--;
 
-		if (this.showLevelCooldown > 0)
-			this.showLevelCooldown--;
-
 		if (! this.isGameOver && this.areEnemiesDead())
 		{
 			this.level++;
-			this.showLevelCooldown = Game.DISPLAY_LEVEL_LIMIT;
+			this.isShowingLevel = true;
 			
 			this.resetEntityLists();
 
@@ -441,7 +445,7 @@ public class Game extends JFrame
 			
 			if (this.getLevel() <= 2)
 			{
-				this.showLevelCooldown = this.story.getShowLevelCooldown(0);
+				this.isShowingLevel = true;
 				this.starSpeed = 1;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
@@ -462,7 +466,7 @@ public class Game extends JFrame
 			
 			if (this.getLevel() == 3)
 			{
-				this.showLevelCooldown = 30;
+				this.isShowingLevel = true;
 				this.starSpeed = 2;
 				
 				for (int i = 0; i < 4 * this.getLevel(); i++)
@@ -487,7 +491,7 @@ public class Game extends JFrame
 			}
 		}
 		
-		if (this.showLevelCooldown == 0)
+		if (! this.isShowingLevel())
 		{
 			for (Entity entity : this.entities)
 				entity.update(this);
