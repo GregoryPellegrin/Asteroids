@@ -3,6 +3,16 @@
  * pellegrin.gregory.work@gmail.com
  */
 
+/*
+ * TODO
+ * 
+ * Histoire
+ * Collision
+ * IA
+ * Niveau
+ * Son
+ */
+
 package Game;
 
 import Entity.Ennemi;
