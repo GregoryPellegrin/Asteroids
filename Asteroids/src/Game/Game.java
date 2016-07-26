@@ -6,10 +6,13 @@
 /*
  * TODO
  * 
- * Histoire
- * Collision
+ * Refactoring
+ * Multijoueurs
+ * Collisions
+ * Objectifs annexes
+ * Map
  * IA
- * Niveau
+ * Site Web
  * Son
  */
 
