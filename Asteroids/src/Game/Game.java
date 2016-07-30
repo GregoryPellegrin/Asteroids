@@ -21,7 +21,7 @@ package Game;
 import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
-import Ennemi.BasicShip;
+import Ennemi.SuperSpeedShip;
 import Entity.Story;
 import Util.Clock;
 import java.awt.BorderLayout;
@@ -319,7 +319,7 @@ public class Game extends JFrame
 		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
 		
 		for (int i = 0; i < 4 * 2; i++)
-			this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
+			this.registerEntity(new SuperSpeedShip (50 + i * 50, 100, Ennemi.START_LEFT));
 		
 		while (! this.isGameStop())
 		{
