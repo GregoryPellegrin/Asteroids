@@ -71,7 +71,7 @@ public class Player extends Ship
 	@Override
 	public void draw (Graphics2D g, Game game)
 	{
-		if (! game.isPlayerInvulnerable() || game.isPaused() || ((super.getAnimationFrame() % 20) < 10))
+		if (! game.isPlayerInvulnerable() || ((super.getAnimationFrame() % 20) < 10))
 		{
 			g.setColor(super.color);
 			g.drawLine(-10, -8, 10, 0);
@@ -81,7 +81,7 @@ public class Player extends Ship
 			
 			g.setColor(WorldPanel.COLOR_DEFAULT);
 
-			if (! game.isPaused() && super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
+			if (super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
 			{
 				g.setColor(super.flamesMotorColor.get(0));
 				g.drawLine(-12, -8, -6, 0);

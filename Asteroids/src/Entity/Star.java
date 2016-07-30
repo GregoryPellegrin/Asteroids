@@ -11,13 +11,18 @@ import java.awt.Graphics2D;
 
 public class Star
 {
+	public static final int STAR_SPEED_SLOW = 1;
+	public static final int STAR_SPEED_NORMAL = 2;
+	public static final int STAR_SPEED_SPEED = 3;
+	
 	private Color color;
 	private int x;
 	private int y;
 	private int w;
 	private int h;
+	private int starSpeed;
 	
-	public Star ()
+	public Star (int starSpeed)
 	{
 		int red = (int) (Math.random() * 256);
 		int green = (int) (Math.random() * 256);
@@ -30,6 +35,8 @@ public class Star
 		
 		this.w = 1 + (int) (Math.random() * 4);
 		this.h = w;
+		
+		this.starSpeed = starSpeed;
 	}
 	
 	public void reCreate ()
@@ -47,7 +54,7 @@ public class Star
 		this.h = w;
 	}
 	
-	public void update (int starSpeed)
+	public void update ()
 	{
 		if ((int) (Math.random() * 100) == 0)
 			this.reCreate();
@@ -55,7 +62,7 @@ public class Star
 		if (this.y >= WorldPanel.H_MAP_PIXEL)
 			this.reCreate();
 		
-		this.y = this.y + starSpeed;
+		this.y = this.y + this.starSpeed;
 	}
 	
 	public void drawStar (Graphics2D g)

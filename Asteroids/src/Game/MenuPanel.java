@@ -35,7 +35,7 @@ public class MenuPanel extends JPanel
 		this.setBackground(Color.BLACK);
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
-			this.starBackground.add(new Star ());
+			this.starBackground.add(new Star (Star.STAR_SPEED_NORMAL));
 		
 		try
 		{
@@ -80,7 +80,7 @@ public class MenuPanel extends JPanel
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
 		{
-			this.starBackground.get(i).update(this.game.getStarSpeed());
+			this.starBackground.get(i).update();
 			this.starBackground.get(i).drawStar(g2d);
 		}
 
@@ -88,22 +88,12 @@ public class MenuPanel extends JPanel
 		this.drawGameTitle(g2d, this.massiveFont, "ASTEROIDS", 80);
 		
 		g.setColor(Color.YELLOW);
-		if (game.getGameMode() == 0)
-			g.setColor(Color.WHITE);
-		this.drawCenter(g2d, this.largeFont, "1 PLAYER", WorldPanel.H_MAP_PIXEL / 2);
-		
-		g.setColor(Color.YELLOW);
-		if (game.getGameMode() == 1)
-			g.setColor(Color.WHITE);
-		this.drawCenter(g2d, this.largeFont, "2 PLAYERS", (WorldPanel.H_MAP_PIXEL / 2) + 30);
-		
-		g.setColor(Color.YELLOW);
-		if (game.getGameMode() == 2)
-			g.setColor(Color.WHITE);
-		this.drawCenter(g2d, this.largeFont, "VERSUS MODE", (WorldPanel.H_MAP_PIXEL / 2) + 60);
+		//if (this.game.isGameModeChoose())
+		//	g.setColor(Color.WHITE);
+		this.drawCenter(g2d, this.massiveFont, "START", WorldPanel.H_MAP_PIXEL / 2);
 		
 		g.setColor(Color.WHITE);
-		this.drawCenter(g2d, this.mediumFont, "CREATED BY SUSHI");
+		this.drawCenter(g2d, this.largeFont, "CREATED BY SUSHI");
 		
 		g2d.setColor(WorldPanel.COLOR_DEFAULT);
 	}

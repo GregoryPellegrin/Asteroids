@@ -21,11 +21,7 @@ package Game;
 import Entity.Ennemi;
 import Entity.Entity;
 import Entity.Player;
-import Ennemi.MotherShip;
 import Ennemi.BasicShip;
-import Ennemi.SpeedShip;
-import Ennemi.SuperMotherShip;
-import Ennemi.SuperSpeedShip;
 import Entity.Story;
 import Util.Clock;
 import java.awt.BorderLayout;
@@ -41,35 +37,28 @@ public class Game extends JFrame
 {
 	public Story story;
 	
-	private static final int GAME_MODE_MAX = 3;
 	private static final int FRAMES_PER_SECOND = 60;
 	private static final long FRAME_TIME = (long) (1000000000.0 / FRAMES_PER_SECOND);
-	private static final int DISPLAY_LEVEL_LIMIT = 60;
 	private static final int DEATH_COOLDOWN_LIMIT = 200;
 	private static final int RESPAWN_COOLDOWN_LIMIT = 100;
 	private static final int INVULN_COOLDOWN_LIMIT = 0;
 	private static final int RESET_COOLDOWN_LIMIT = 120;
 	
-	private final KeyAdapter menuListener;
-	private final KeyAdapter soloModeListener;
 	private final MenuPanel menu;
 	private final WorldPanel world;
+	private final KeyAdapter menuListener;
+	private final KeyAdapter playerListener;
 	
 	private List <Entity> entities;
 	private List <Entity> pendingEntities;
 	private Clock logicTimer;
 	private Player player;
-	private boolean isGameModeChoose;
-	private boolean isGameOver;
-	private boolean isShowingLevel;
-	private boolean restartGame;
-	private int gameMode;
+	private boolean isGameStart;
+	private boolean isGameStop;
 	private int deathCooldown;
 	private int restartCooldown;
 	private int score;
 	private int lives;
-	private int level;
-	private int starSpeed;
 
 	private Game ()
 	{
@@ -84,27 +73,19 @@ public class Game extends JFrame
 			public void keyPressed (KeyEvent e)
 			{
 				switch (e.getKeyCode())
-				{
-					case KeyEvent.VK_UP:
-						changeGameModeUp();
-						break;
-
-					case KeyEvent.VK_DOWN:
-						changeGameModeDown();
-						break;
-						
+				{						
 					case KeyEvent.VK_SPACE:
-						gameModeIsChoose();
+						startTheGame();
 						break;
 
 					case KeyEvent.VK_ENTER:
-						gameModeIsChoose();
+						startTheGame();
 						break;
 				}
 			}
 		};
 		
-		this.soloModeListener = new KeyAdapter ()
+		this.playerListener = new KeyAdapter ()
 		{
 			@Override
 			public void keyPressed (KeyEvent e)
@@ -112,47 +93,27 @@ public class Game extends JFrame
 				switch (e.getKeyCode())
 				{
 					case KeyEvent.VK_Z:
-						if (! checkForRestart())
-							player.setMove(true);
+						player.setMove(true);
 						break;
 
 					case KeyEvent.VK_D:
-						if (! checkForRestart())
-							player.setRotateRight(true);
+						player.setRotateRight(true);
 						break;
 
 					case KeyEvent.VK_Q:
-						if (! checkForRestart())
-							player.setRotateLeft(true);
+						player.setRotateLeft(true);
 						break;
 
 					case KeyEvent.VK_O:
-						if (! checkForRestart())
-							player.setSuperSpeed(true);
+						player.setSuperSpeed(true);
 						break;
 
 					case KeyEvent.VK_SPACE:
-						if (! checkForRestart())
-							player.setFiring(true);
-						
-						if (isShowingLevel)
-							isShowingLevel = false;
-						break;
-
-					case KeyEvent.VK_ENTER:
-						isShowingLevel = false;
-						break;
-
-					case KeyEvent.VK_P:
-						if (! checkForRestart())
-							logicTimer.setPaused(! logicTimer.isPaused());
+						player.setFiring(true);
 						break;
 					
 					case KeyEvent.VK_ESCAPE:
-						restart();
-
-					default:
-						checkForRestart();
+						stopTheGame();
 						break;
 				}
 			}
@@ -207,15 +168,15 @@ public class Game extends JFrame
 	{
 		return this.player;
 	}
-	
-	public boolean isGameOver ()
+
+	public boolean isPlayerInvulnerable ()
 	{
-		return this.isGameOver;
+		return (this.deathCooldown > Game.INVULN_COOLDOWN_LIMIT);
 	}
-	
-	public int getGameMode ()
+
+	public boolean canDrawPlayer ()
 	{
-		return this.gameMode;
+		return (this.deathCooldown <= Game.RESPAWN_COOLDOWN_LIMIT);
 	}
 
 	public int getScore ()
@@ -228,59 +189,9 @@ public class Game extends JFrame
 		return this.lives;
 	}
 
-	public int getLevel ()
+	public void registerEntity (Entity entity)
 	{
-		return this.level;
-	}
-	
-	public int getStarSpeed ()
-	{
-		return this.starSpeed;
-	}
-
-	public boolean isPaused ()
-	{
-		return this.logicTimer.isPaused();
-	}
-
-	public boolean isPlayerInvulnerable ()
-	{
-		return (this.deathCooldown > Game.INVULN_COOLDOWN_LIMIT);
-	}
-
-	public boolean canDrawPlayer ()
-	{
-		return (this.deathCooldown <= Game.RESPAWN_COOLDOWN_LIMIT);
-	}
-	
-	public boolean isShowingLevel ()
-	{
-		return this.isShowingLevel;
-	}
-	
-	private boolean areEnemiesDead ()
-	{
-		for (Entity e : this.entities)
-			if (e.getClass().getSuperclass() == Ennemi.class)
-				return false;
-		
-		return true;
-	}
-
-	private boolean checkForRestart ()
-	{
-		boolean restart = (this.isGameOver && (this.restartCooldown <= 0));
-		
-		if (restart)
-			this.restartGame = true;
-		
-		return restart;
-	}
-	
-	private void restart ()
-	{
-		this.restartGame = true;
-		this.isGameOver = true;
+		this.pendingEntities.add(entity);
 	}
 
 	public void addScore (int score)
@@ -294,7 +205,6 @@ public class Game extends JFrame
 
 		if (this.lives == 0)
 		{
-			this.isGameOver = true;
 			this.restartCooldown = Game.RESET_COOLDOWN_LIMIT;
 			this.deathCooldown = Integer.MAX_VALUE;
 		}
@@ -304,9 +214,24 @@ public class Game extends JFrame
 		this.player.setFiringEnabled(false);
 	}
 
-	public void registerEntity (Entity entity)
+	private boolean isGameStart ()
 	{
-		this.pendingEntities.add(entity);
+		return isGameStart;
+	}
+
+	private boolean isGameStop ()
+	{
+		return isGameStop;
+	}
+	
+	private void startTheGame ()
+	{
+		this.isGameStart = true;
+	}
+	
+	private void stopTheGame ()
+	{
+		this.isGameStop = true;
 	}
 	
 	private void resetEntityLists ()
@@ -319,31 +244,12 @@ public class Game extends JFrame
 	private void removeKeyListener ()
 	{
 		this.removeKeyListener(this.menuListener);
-		this.removeKeyListener(this.soloModeListener);
-	}
-	
-	private void changeGameModeUp ()
-	{
-		if (this.gameMode > 0)
-			this.gameMode--;
-	}
-	
-	private void changeGameModeDown ()
-	{
-		if (this.gameMode < (Game.GAME_MODE_MAX - 1))
-			this.gameMode++;
-	}
-	
-	private void gameModeIsChoose ()
-	{
-		this.isGameModeChoose = true;
+		this.removeKeyListener(this.playerListener);
 	}
 	
 	private void resetMenu ()
 	{
-		this.isGameModeChoose = false;
-		this.gameMode = 0;
-		this.starSpeed = 1;
+		this.isGameStart = false;
 		
 		this.resetEntityLists();
 		this.removeKeyListener();
@@ -358,12 +264,9 @@ public class Game extends JFrame
 	private void resetGame ()
 	{
 		this.score = 0;
-		this.level = 0;
 		this.lives = 3;
 		this.deathCooldown = 0;
-		this.isGameOver = false;
-		this.restartGame = false;
-		this.starSpeed = 1;
+		this.isGameStop = false;
 		
 		this.resetEntityLists();
 		this.removeKeyListener();
@@ -372,7 +275,7 @@ public class Game extends JFrame
 		this.add(this.world, BorderLayout.CENTER);
 		this.revalidate();
 		
-		this.addKeyListener(this.soloModeListener);
+		this.addKeyListener(this.playerListener);
 	}
 
 	private void startMenu ()
@@ -384,7 +287,7 @@ public class Game extends JFrame
 
 		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
 		
-		while (! this.isGameModeChoose)
+		while (! this.isGameStart())
 		{
 			long start = System.nanoTime();
 			
@@ -415,7 +318,10 @@ public class Game extends JFrame
 
 		this.logicTimer = new Clock (Game.FRAMES_PER_SECOND);
 		
-		while (! this.isGameOver || ! this.restartGame)
+		for (int i = 0; i < 4 * 2; i++)
+			this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
+		
+		while (! this.isGameStop())
 		{
 			long start = System.nanoTime();
 			
@@ -445,47 +351,6 @@ public class Game extends JFrame
 
 		if (this.restartCooldown > 0)
 			this.restartCooldown--;
-
-		if (! this.isGameOver && this.areEnemiesDead())
-		{
-			this.level++;
-			this.isShowingLevel = true;
-			
-			this.resetEntityLists();
-
-			this.player.reset();
-			this.player.setFiringEnabled(true);
-			
-			if (this.getLevel() <= 2)
-			{
-				this.isShowingLevel = true;
-				this.starSpeed = 1;
-				
-				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
-				
-				for (int i = 0; i < 2 * this.getLevel(); i++)
-					this.registerEntity(new SpeedShip (50 + i * 50, 200, Ennemi.START_LEFT));
-				
-				for (int i = 0; i < 2 * this.getLevel(); i++)
-					this.registerEntity(new SuperSpeedShip (50 + i * 50, 300, Ennemi.START_LEFT));
-				
-				for (int i = 0; i < 1 * this.getLevel(); i++)
-					this.registerEntity(new MotherShip (50 + i * 50, 400, Ennemi.START_LEFT));
-				
-				for (int i = 0; i < 1 * this.getLevel(); i++)
-					this.registerEntity(new SuperMotherShip (300 + i * 50, 200, Ennemi.START_LEFT));
-			}
-			
-			if (this.getLevel() == 3)
-			{
-				this.isShowingLevel = true;
-				this.starSpeed = 2;
-				
-				for (int i = 0; i < 4 * this.getLevel(); i++)
-					this.registerEntity(new BasicShip (50 + i * 50, 100, Ennemi.START_LEFT));
-			}
-		}
 		
 		if (this.deathCooldown > 0)
 		{
@@ -504,32 +369,29 @@ public class Game extends JFrame
 			}
 		}
 		
-		if (! this.isShowingLevel())
+		for (Entity entity : this.entities)
+			entity.update(this);
+
+		for (int i = 0; i < this.entities.size(); i++)
 		{
-			for (Entity entity : this.entities)
-				entity.update(this);
-			
-			for (int i = 0; i < this.entities.size(); i++)
+			Entity a = this.entities.get(i);
+
+			for (int j = i + 1; j < this.entities.size(); j++)
 			{
-				Entity a = this.entities.get(i);
-				
-				for (int j = i + 1; j < this.entities.size(); j++)
+				Entity b = this.entities.get(j);
+
+				if (i != j && a.checkCollision(b) && ((a != this.player && b != this.player) || this.deathCooldown <= Game.INVULN_COOLDOWN_LIMIT))
 				{
-					Entity b = this.entities.get(j);
-					
-					if (i != j && a.checkCollision(b) && ((a != this.player && b != this.player) || this.deathCooldown <= Game.INVULN_COOLDOWN_LIMIT))
-					{
-						a.checkCollision(this, b);
-						b.checkCollision(this, a);
-					}
+					a.checkCollision(this, b);
+					b.checkCollision(this, a);
 				}
 			}
-
-			Iterator <Entity> iter = this.entities.iterator();
-			while (iter.hasNext())
-				if (iter.next().needsRemoval())
-					iter.remove();
 		}
+
+		Iterator <Entity> iter = this.entities.iterator();
+		while (iter.hasNext())
+			if (iter.next().needsRemoval())
+				iter.remove();
 	}
 
 	public static void main (String [] args)

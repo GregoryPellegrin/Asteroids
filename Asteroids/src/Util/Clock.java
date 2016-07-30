@@ -7,7 +7,6 @@ package Util;
 
 public class Clock
 {
-	private boolean isPaused;
 	private float millisPerCycle;
 	private float excessCycles;
 	private long lastUpdate;
@@ -19,14 +18,9 @@ public class Clock
 		this.reset();
 	}
 	
-	private static final long getCurrentTime ()
+	private static long getCurrentTime ()
 	{
 		return (System.nanoTime() / 1000000L);
-	}
-	
-	public boolean isPaused ()
-	{
-		return this.isPaused;
 	}
 	
 	public boolean hasElapsedCycle ()
@@ -51,29 +45,20 @@ public class Clock
 		this.millisPerCycle = (1.0f / cyclesPerSecond) * 1000;
 	}
 	
-	public void setPaused (boolean paused)
-	{
-		this.isPaused = paused;
-	}
-	
 	public void reset ()
 	{
 		this.elapsedCycles = 0;
 		this.excessCycles = 0.0f;
-		this.lastUpdate = this.getCurrentTime();
-		this.isPaused = false;
+		this.lastUpdate = Clock.getCurrentTime();
 	}
 	
 	public void update ()
 	{
-		long currUpdate = this.getCurrentTime();
+		long currUpdate = Clock.getCurrentTime();
 		float delta = (float) (currUpdate - this.lastUpdate) + this.excessCycles;
 
-		if (! isPaused)
-		{
-			this.elapsedCycles = this.elapsedCycles + (int) Math.floor(delta / this.millisPerCycle);
-			this.excessCycles = delta % millisPerCycle;
-		}
+		this.elapsedCycles = this.elapsedCycles + (int) Math.floor(delta / this.millisPerCycle);
+		this.excessCycles = delta % millisPerCycle;
 
 		this.lastUpdate = currUpdate;
 	}

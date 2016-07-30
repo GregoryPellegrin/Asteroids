@@ -44,7 +44,7 @@ public class WorldPanel extends JPanel
 		this.setBackground(Color.BLACK);
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
-			this.starBackground.add(new Star ());
+			this.starBackground.add(new Star (Star.STAR_SPEED_SLOW));
 		
 		try
 		{
@@ -89,76 +89,45 @@ public class WorldPanel extends JPanel
 		
 		AffineTransform identity = g2d.getTransform();
 
-		if (! this.game.isShowingLevel())
+		Iterator <Entity> iter = this.game.getEntities().iterator();
+		while (iter.hasNext())
 		{
-			Iterator <Entity> iter = this.game.getEntities().iterator();
-			while (iter.hasNext())
+			Entity entity = iter.next();
+
+			if ((entity != this.game.getPlayer()) || this.game.canDrawPlayer())
 			{
-				Entity entity = iter.next();
+				Vector pos = entity.getPosition();
 
-				if ((entity != this.game.getPlayer()) || this.game.canDrawPlayer())
+				this.drawEntity(g2d, entity, pos.x, pos.y);
+				g2d.setTransform(identity);
+
+				double radius = entity.getCollisionRadius();
+				double x = (pos.x < radius) ? pos.x + WorldPanel.W_MAP_PIXEL
+						: (pos.x > WorldPanel.W_MAP_PIXEL - radius) ? pos.x - WorldPanel.W_MAP_PIXEL : pos.x;
+				double y = (pos.y < radius) ? pos.y + WorldPanel.H_MAP_PIXEL
+						: (pos.y > WorldPanel.H_MAP_PIXEL - radius) ? pos.y - WorldPanel.H_MAP_PIXEL : pos.y;
+
+				if ((x != pos.x) || (y != pos.y))
 				{
-					Vector pos = entity.getPosition();
-
-					this.drawEntity(g2d, entity, pos.x, pos.y);
+					this.drawEntity(g2d, entity, x, y);
 					g2d.setTransform(identity);
-
-					double radius = entity.getCollisionRadius();
-					double x = (pos.x < radius) ? pos.x + WorldPanel.W_MAP_PIXEL
-							: (pos.x > WorldPanel.W_MAP_PIXEL - radius) ? pos.x - WorldPanel.W_MAP_PIXEL : pos.x;
-					double y = (pos.y < radius) ? pos.y + WorldPanel.H_MAP_PIXEL
-							: (pos.y > WorldPanel.H_MAP_PIXEL - radius) ? pos.y - WorldPanel.H_MAP_PIXEL : pos.y;
-
-					if ((x != pos.x) || (y != pos.y))
-					{
-						this.drawEntity(g2d, entity, x, y);
-						g2d.setTransform(identity);
-					}
 				}
 			}
 		}
 		
-		if (this.game.isShowingLevel())
-		{
-			g2d.setColor(this.game.story.getColor(0));
-			for (int i = 0; i < this.game.story.getSize(0); i++)
-				this.drawTextCentered(g2d, this.game.story.getFont(0, i), this.game.story.getText(0, i), this.game.story.getYPosition(0, i));
-		}
-		
-		if (! this.game.isGameOver())
-		{
-			g2d.setFont(this.largeFont);
-			g2d.setColor(Color.RED);
-			g2d.drawString("SCORE", 10, 25);
-			
-			g2d.setFont(this.mediumFont);
-			g2d.setColor(Color.CYAN);
-			g2d.drawString(String.valueOf(this.game.getScore()), 10, 50);
-			
-			g2d.setColor(WorldPanel.COLOR_DEFAULT);
-		}
-		
-		if (this.game.isGameOver())
-		{
-			g2d.setColor(Color.RED);
-			this.drawTextCentered(g2d, this.massiveFont, "GAME OVER", -25);
-			
-			g2d.setColor(Color.CYAN);
-			this.drawTextCentered(g2d, this.largeFont, "FINAL SCORE " + this.game.getScore(), 10);
-			
-			g2d.setColor(WorldPanel.COLOR_DEFAULT);
-		}
-		else
-		{
-			if (this.game.isPaused())
-				this.drawTextCentered(g2d, this.massiveFont, "PAUSED", -25);
-			else if (this.game.isShowingLevel())
-					this.drawTextCentered(g2d, this.massiveFont, "LEVEL " + this.game.getLevel(), -25);
-		}
+		g2d.setFont(this.largeFont);
+		g2d.setColor(Color.RED);
+		g2d.drawString("SCORE", 10, 25);
+
+		g2d.setFont(this.mediumFont);
+		g2d.setColor(Color.CYAN);
+		g2d.drawString(String.valueOf(this.game.getScore()), 10, 50);
+
+		g2d.setColor(WorldPanel.COLOR_DEFAULT);
 		
 		for (int i = 0; i < WorldPanel.STAR_BACKGROUND_MAX; i++)
 		{
-			this.starBackground.get(i).update(this.game.getStarSpeed());
+			this.starBackground.get(i).update();
 			this.starBackground.get(i).drawStar(g2d);
 		}
 		

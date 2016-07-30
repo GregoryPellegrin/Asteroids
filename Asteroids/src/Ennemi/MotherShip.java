@@ -58,7 +58,7 @@ public class MotherShip extends Ennemi
 
 		g.setColor(WorldPanel.COLOR_DEFAULT);
 
-		if (! game.isPaused() && super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
+		if (super.isMovePressed() && ((super.getAnimationFrame() % 6) < 3))
 		{
 			g.setColor(super.flamesMotorColor.get(0));
 			g.drawLine(-17, -12, -20, 0);
