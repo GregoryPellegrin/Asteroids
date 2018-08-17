@@ -92,7 +92,7 @@ public class Game extends JFrame
 			{
 				switch (e.getKeyCode())
 				{
-					case KeyEvent.VK_Z:
+					case KeyEvent.VK_W:
 						player.setMove(true);
 						break;
 
@@ -100,7 +100,7 @@ public class Game extends JFrame
 						player.setRotateRight(true);
 						break;
 
-					case KeyEvent.VK_Q:
+					case KeyEvent.VK_A:
 						player.setRotateLeft(true);
 						break;
 
@@ -123,7 +123,7 @@ public class Game extends JFrame
 			{
 				switch (e.getKeyCode())
 				{
-					case KeyEvent.VK_Z:
+					case KeyEvent.VK_W:
 						player.setMove(false);
 						break;
 
@@ -131,7 +131,7 @@ public class Game extends JFrame
 						player.setRotateRight(false);
 						break;
 						
-					case KeyEvent.VK_Q:
+					case KeyEvent.VK_A:
 						player.setRotateLeft(false);
 						break;
 
